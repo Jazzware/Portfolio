@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "npm run build && npx --yes wrangler@3 pages deploy dist --project-name portafolio"
+    "deploy": "npm run build && npx --yes wrangler@3 pages deploy dist --project-name portafolio",
+    "test": "node --test tests/contacto.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.2.8",
