@@ -1,0 +1,123 @@
+---
+// La misma línea del mapa, ahora vertical y en detalle: una parada por trabajo, del más reciente al más antiguo.
+// Cada parada es el destino de su estación en el mapa de la portada (id = exp-<empresa>).
+// Al leer, la línea se enciende hasta la altura de lectura y cada parada se ilumina al alcanzarla.
+// Sin JavaScript o con movimiento reducido, la línea ya está encendida completa.
+import { content, type Lang } from '../data/content';
+import { jobs } from '../lib/jobs';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const list = jobs(lang);
+const stackLabel = lang === 'es' ? 'Tecnologías' : 'Technologies';
+const pendingLabel = lang === 'es' ? 'Dato de ejemplo: reemplazar con el CV' : 'Placeholder: replace with CV data';
+---
+<ol class="route">
+  {list.map((j, i) => (
+    <li id={j.id} class:list={['stop', { now: j.current, pending: j.pending }]}>
+      {i < list.length - 1 && <span class="seg" aria-hidden="true"><span class="fill"></span></span>}
+      <span class="dot" aria-hidden="true"></span>
+      <div class="when">
+        <p class="dates">{j.dates}</p>
+        <p class="duration">{j.duration}</p>
+      </div>
+      <div class="what">
+        <h3>{j.role[lang]}</h3>
+        <p class="company">{j.company}{j.place && <span>, {j.place}</span>}</p>
+        {j.highlights[lang].length > 0 && (
+          <ul class="highlights">{j.highlights[lang].map((h) => <li>{h}</li>)}</ul>
+        )}
+        {j.stack && (
+          <ul class="chips" aria-label={stackLabel}>{j.stack.split(', ').map((s) => <li>{s}</li>)}</ul>
+        )}
+        {j.pending && <p class="badge">{pendingLabel}</p>}
+      </div>
+    </li>
+  ))}
+</ol>
+
+<script>
+  const route = document.querySelector<HTMLElement>('.route');
+  if (route && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const stops = [...route.querySelectorAll<HTMLElement>('.stop')].map((stop) => ({
+      stop,
+      dot: stop.querySelector<HTMLElement>('.dot')!,
+      seg: stop.querySelector<HTMLElement>('.seg'),
+    }));
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const reading = innerHeight * 0.55;
+      for (const { stop, dot, seg } of stops) {
+        const d = dot.getBoundingClientRect();
+        stop.classList.toggle('reached', d.top + d.height / 2 <= reading);
+        if (seg) {
+          const r = seg.getBoundingClientRect();
+          seg.style.setProperty('--f', String(Math.min(1, Math.max(0, (reading - r.top) / r.height))));
+        }
+      }
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+    route.classList.add('scrolly');
+    update();
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+  }
+</script>
+
+<style>
+  .route { --dot: 24px; --band: 8px; --dot-top: 3px; margin-top: 72px; }
+  .stop {
+    position: relative;
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 8px 48px;
+    padding: 0 0 72px 60px;
+    scroll-margin-top: 96px;
+  }
+  /* Tramo hacia la parada siguiente: la vía apagada y, encima, la parte encendida. */
+  .seg {
+    position: absolute;
+    left: calc(var(--dot) / 2 - var(--band) / 2);
+    top: calc(var(--dot-top) + var(--dot) / 2);
+    width: var(--band);
+    height: 100%;
+    background: var(--borde);
+  }
+  .fill {
+    position: absolute; inset: 0;
+    background: var(--linea);
+    box-shadow: var(--brillo);
+    transform-origin: top;
+    transform: scaleY(var(--f, 1));
+  }
+  .dot {
+    position: absolute; z-index: 1; left: 0; top: var(--dot-top);
+    width: var(--dot); height: var(--dot);
+    border-radius: 50%;
+    background: var(--fondo);
+    border: 5px solid var(--texto);
+    transition: border-color 300ms ease, box-shadow 300ms ease, scale 300ms ease;
+  }
+  .now .dot { border-color: var(--senal); box-shadow: 0 0 20px 4px color-mix(in srgb, var(--senal) 40%, transparent); }
+  .scrolly .stop:not(.reached) .dot { border-color: var(--borde); box-shadow: none; scale: 0.85; }
+
+  .dates { font-family: var(--display); font-weight: 700; font-size: 26px; line-height: 1.15; }
+  .duration { margin-top: 4px; font-size: 16px; color: var(--texto-2); }
+
+  .what h3 { font-size: 34px; line-height: 1.05; }
+  .company { margin-top: 4px; font-size: 19px; font-weight: 600; color: var(--texto-2); }
+  .highlights { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; max-width: 68ch; }
+  .highlights li { position: relative; padding-left: 24px; }
+  .highlights li::before { content: ''; position: absolute; left: 0; top: 0.78em; width: 12px; height: 3px; border-radius: 2px; background: var(--linea); }
+  .what .chips { margin-top: 22px; }
+
+  .pending .what { color: var(--texto-2); }
+  .badge { display: inline-block; margin-top: 16px; padding: 2px 10px; border: 1.5px dashed var(--texto-2); border-radius: 6px; font-size: 15px; }
+
+  @media (max-width: 760px) {
+    .route { margin-top: 48px; }
+    .stop { grid-template-columns: minmax(0, 1fr); padding: 0 0 56px 44px; }
+    .what h3 { font-size: 28px; margin-top: 12px; }
+  }
+</style>
