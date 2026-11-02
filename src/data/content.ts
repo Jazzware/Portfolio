@@ -10,7 +10,7 @@ export const content = {
     nav: { project: 'PaleoSharp', experience: 'Experiencia', skills: 'Herramientas', contact: 'Contacto', other: 'English', otherHref: '/en/' },
     hero: {
       role: 'Ingeniero de software en Ciudad de México',
-      lede: 'Más de ocho años construyendo y manteniendo sistemas en C# y .NET con SQL Server. He sido el punto de escalación cuando algo falla en producción, he modernizado sistemas legacy sin detener la operación y he acompañado a otros ingenieros como mentor y Scrum Master.',
+      lede: 'Más de ocho años desarrollando servicios backend en C# y .NET sobre SQL Server, e implementando procesos de CI/CD. He sido el punto de escalación cuando algo falla en producción, he migrado sistemas legacy a la web y he acompañado a otros ingenieros como mentor y Scrum Master.',
       seeking: 'Busco un puesto de Software Engineer III.',
       contact: 'Escríbeme',
       play: 'Jugar PaleoSharp',
@@ -40,7 +40,7 @@ export const content = {
       practicesTitle: 'Lo que hago bien',
       practices: [
         'Resolver incidentes en producción como punto de escalación técnico.',
-        'Modernizar sistemas legacy por partes, sin detener la operación.',
+        'Migrar sistemas legacy: de Visual FoxPro a la web, o de un framework y una base de datos a sus versiones nuevas.',
         'Acompañar a otros ingenieros como mentor y facilitar al equipo como Scrum Master.',
         'Entregar con CI/CD (GitHub Actions, Jenkins, TeamCity, Octopus Deploy) y observar con ELK.',
         'Usar IA, como GitHub Copilot, dentro del flujo de desarrollo.',
@@ -49,13 +49,16 @@ export const content = {
       duration: (y: number, m: number) => [y && (y === 1 ? '1 año' : `${y} años`), m && (m === 1 ? '1 mes' : `${m} meses`)].filter(Boolean).join(' y '),
     },
     skills: {
-      title: 'Herramientas',
+      title: 'Herramientas y formación',
       groups: [
-        { name: 'Backend', items: 'C#, .NET, SQL Server' },
-        { name: 'Frontend', items: 'React, TypeScript, AngularJS' },
-        { name: 'Entrega y operación', items: 'Docker, GitHub Actions, Jenkins, TeamCity, Octopus Deploy, ELK' },
-        { name: 'Equipo', items: 'Scrum, mentoría, revisión de código' },
-        { name: 'Idiomas', items: 'Español nativo, inglés C1' },
+        { name: 'Backend', items: 'C#, .NET, ASP.NET, Entity Framework Core' },
+        { name: 'Datos', items: 'SQL Server, PostgreSQL, stored procedures, ETL, SSRS' },
+        { name: 'Frontend', items: 'React, TypeScript, AngularJS, Blazor' },
+        { name: 'Entrega y operación', items: 'Docker, GitHub Actions, Jenkins, TeamCity, Octopus Deploy, ELK, Jira' },
+        { name: 'También he usado', items: 'Java, PHP, Laravel, Python, Django' },
+        { name: 'Formación', items: 'Ingeniería de Software, Universidad del Valle de México' },
+        { name: 'Cursos', items: 'Scrum Master Training (Solera, 2023), Git y GitHub (Platzi, 2021), CCNA (UVM, 2018)' },
+        { name: 'Idiomas', items: 'Español nativo, inglés C1, francés A1' },
       ],
     },
     contact: {
@@ -76,7 +79,7 @@ export const content = {
     nav: { project: 'PaleoSharp', experience: 'Experience', skills: 'Tools', contact: 'Contact', other: 'Español', otherHref: '/' },
     hero: {
       role: 'Software engineer in Mexico City',
-      lede: 'Eight-plus years building and maintaining C# and .NET systems on SQL Server. I have been the escalation point when production breaks, modernized legacy systems without stopping operations, and supported other engineers as a mentor and Scrum Master.',
+      lede: 'Eight-plus years developing backend services in C# and .NET on SQL Server, and implementing CI/CD processes. I have been the escalation point when production breaks, moved legacy systems to the web, and supported other engineers as a mentor and Scrum Master.',
       seeking: 'I am looking for a Software Engineer III role.',
       contact: 'Email me',
       play: 'Play PaleoSharp',
@@ -106,7 +109,7 @@ export const content = {
       practicesTitle: 'What I do well',
       practices: [
         'Resolving production incidents as the technical escalation point.',
-        'Modernizing legacy systems piece by piece, without stopping operations.',
+        'Migrating legacy systems: from Visual FoxPro to the web, or from one framework and database to their newer versions.',
         'Mentoring other engineers and facilitating the team as Scrum Master.',
         'Shipping with CI/CD (GitHub Actions, Jenkins, TeamCity, Octopus Deploy) and observing with ELK.',
         'Using AI, such as GitHub Copilot, as part of the development workflow.',
@@ -115,13 +118,16 @@ export const content = {
       duration: (y: number, m: number) => [y && (y === 1 ? '1 year' : `${y} years`), m && (m === 1 ? '1 month' : `${m} months`)].filter(Boolean).join(', '),
     },
     skills: {
-      title: 'Tools',
+      title: 'Tools and education',
       groups: [
-        { name: 'Backend', items: 'C#, .NET, SQL Server' },
-        { name: 'Frontend', items: 'React, TypeScript, AngularJS' },
-        { name: 'Delivery and operations', items: 'Docker, GitHub Actions, Jenkins, TeamCity, Octopus Deploy, ELK' },
-        { name: 'Team', items: 'Scrum, mentoring, code review' },
-        { name: 'Languages', items: 'Spanish (native), English (C1)' },
+        { name: 'Backend', items: 'C#, .NET, ASP.NET, Entity Framework Core' },
+        { name: 'Data', items: 'SQL Server, PostgreSQL, stored procedures, ETL, SSRS' },
+        { name: 'Frontend', items: 'React, TypeScript, AngularJS, Blazor' },
+        { name: 'Delivery and operations', items: 'Docker, GitHub Actions, Jenkins, TeamCity, Octopus Deploy, ELK, Jira' },
+        { name: 'Also used', items: 'Java, PHP, Laravel, Python, Django' },
+        { name: 'Education', items: "Bachelor's degree in Software Engineering, Universidad del Valle de México" },
+        { name: 'Courses', items: 'Scrum Master Training (Solera, 2023), Git and GitHub (Platzi, 2021), CCNA (UVM, 2018)' },
+        { name: 'Languages', items: 'Spanish (native), English (C1), French (A1)' },
       ],
     },
     contact: {

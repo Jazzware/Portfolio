@@ -41,6 +41,7 @@ const base = experience.length ? parse(experience[experience.length - 1].from).g
         {l.highlights[lang].length > 0 && (
           <ul>{l.highlights[lang].map((h) => <li>{h}</li>)}</ul>
         )}
+        {l.stack && <p class="stack muted">{l.stack}</p>}
         {l.pending && <p class="badge">{lang === 'es' ? 'Dato de ejemplo: reemplazar con el CV' : 'Placeholder: replace with CV data'}</p>}
       </div>
     </li>
@@ -117,6 +118,7 @@ const base = experience.length ? parse(experience[experience.length - 1].from).g
   .sep { margin: 0 4px; }
   .entry ul { list-style: disc; margin-top: 12px; padding-left: 1.1em; display: flex; flex-direction: column; gap: 6px; }
   .entry li::marker { color: var(--ocre); }
+  .stack { margin-top: 12px; font-size: 15px; }
   .entry.pending h3, .entry.pending p:not(.badge), .entry.pending li { color: var(--lutita); }
   .badge { display: inline-block; margin-top: 14px; padding: 2px 10px; border: 1.5px dashed var(--ocre); border-radius: 6px; font-size: 14px; color: var(--lutita); }
 
