@@ -6,7 +6,7 @@ export const site = {
   name: 'Iván López Villegas',
   /** Correo público de contacto. */
   email: null as string | null,
-  linkedin: null as string | null,
+  linkedin: 'https://www.linkedin.com/in/ivan-lopezv/' as string | null,
   github: null as string | null,
   /** Ruta o URL del CV en PDF; por ejemplo '/cv-ivan-lopez.pdf' si lo pones en public/. */
   cv: { es: null as string | null, en: null as string | null },
