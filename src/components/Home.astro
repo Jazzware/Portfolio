@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import { content, type Lang } from '../data/content';
 import { site } from '../config';
 import Strata from './Strata.astro';
+import ContactForm from './ContactForm.astro';
 import labShot from '../assets/paleosharp-lab.png';
 import siteShot from '../assets/paleosharp-yacimiento.png';
 
@@ -13,11 +14,11 @@ const cv = site.cv[lang];
 const [first, ...rest] = site.name.split(' ');
 const nameLines = [first + ' ' + rest[0], rest.slice(1).join(' ')];
 const contactLinks = [
-  site.email && { label: t.contact.email, href: `mailto:${site.email}`, text: site.email, big: true },
+  site.email && { label: t.contact.email, href: `mailto:${site.email}`, text: site.email },
   site.linkedin && { label: t.contact.linkedin, href: site.linkedin, text: site.linkedin.replace(/^https?:\/\/(www\.)?/, '') },
   site.github && { label: t.contact.github, href: site.github, text: site.github.replace(/^https?:\/\/(www\.)?/, '') },
   cv && { label: t.contact.cv, href: cv, text: t.hero.cv },
-].filter(Boolean) as { label: string; href: string; text: string; big?: boolean }[];
+].filter(Boolean) as { label: string; href: string; text: string }[];
 ---
 <header class="top wrap">
   <a class="home" href={lang === 'es' ? '/' : '/en/'}>{site.name}</a>
@@ -37,8 +38,8 @@ const contactLinks = [
     <p class="lede">{t.hero.lede}</p>
     <p class="seeking">{t.hero.seeking}</p>
     <div class="actions">
-      {site.email && <a class="button solid" href={`mailto:${site.email}`}>{t.hero.contact}</a>}
-      <a class:list={['button', { solid: !site.email }]} href={site.paleosharp.play}>{t.hero.play}</a>
+      <a class="button solid" href="#contacto">{t.hero.contact}</a>
+      <a class="button" href={site.paleosharp.play}>{t.hero.play}</a>
       {cv && <a class="button" href={cv} download>{t.hero.cv}</a>}
     </div>
   </section>
@@ -95,17 +96,21 @@ const contactLinks = [
   </section>
 
   <section id="contacto" class="section contact wrap" aria-labelledby="contacto-title">
-    <h2 id="contacto-title">{t.contact.title}</h2>
-    <p class="lede">{t.contact.text}</p>
-    {contactLinks.length > 0 ? (
-      <ul class="contact-links">
-        {contactLinks.map((l) => (
-          <li class:list={{ big: l.big }}><span class="muted">{l.label}</span><a href={l.href}>{l.text}</a></li>
-        ))}
-      </ul>
-    ) : (
-      <p class="pending-note">Pendiente: agrega tu correo, LinkedIn y GitHub en src/config.ts.</p>
-    )}
+    <div class="contact-text">
+      <h2 id="contacto-title">{t.contact.title}</h2>
+      <p class="lede">{t.contact.text}</p>
+      {contactLinks.length > 0 && (
+        <>
+          <p class="muted elsewhere">{t.contact.elsewhere}</p>
+          <ul class="contact-links">
+            {contactLinks.map((l) => (
+              <li><span class="muted">{l.label}</span><a href={l.href}>{l.text}</a></li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+    <ContactForm lang={lang} />
   </section>
 </main>
 
@@ -169,12 +174,13 @@ const contactLinks = [
   .skills dt { font-weight: 620; }
   @media (max-width: 640px) { .skills div { grid-template-columns: 1fr; gap: 2px; } }
 
-  .contact .lede { margin-top: 16px; max-width: 36em; font-size: 20px; }
-  .contact-links { list-style: none; padding: 0; margin-top: 32px; display: flex; flex-direction: column; gap: 14px; }
-  .contact-links li { display: grid; grid-template-columns: 9em 1fr; gap: 16px; align-items: baseline; }
-  .contact-links li.big a { font-size: clamp(26px, 4.4vw, 48px); font-stretch: 118%; font-weight: 680; line-height: 1.1; word-break: break-all; }
-  @media (max-width: 640px) { .contact-links li { grid-template-columns: 1fr; gap: 0; } }
-  .pending-note { margin-top: 24px; padding: 14px 18px; border: 1.5px dashed var(--ocre); border-radius: 8px; color: var(--lutita); max-width: 36em; }
+  .contact { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 56px; align-items: start; }
+  .contact .lede { margin-top: 16px; max-width: 30em; font-size: 20px; }
+  .elsewhere { margin-top: 32px; }
+  .contact-links { list-style: none; padding: 0; margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+  .contact-links li { display: grid; grid-template-columns: 6em 1fr; gap: 12px; align-items: baseline; }
+  .contact-links a { overflow-wrap: anywhere; }
+  @media (max-width: 900px) { .contact { grid-template-columns: 1fr; gap: 32px; } }
 
   .foot { padding-top: 96px; padding-bottom: 40px; font-size: 15px; }
 </style>
