@@ -18,13 +18,15 @@ const canonical = new URL(lang === 'es' ? '/' : '/en/', site.url);
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="es" href={new URL('/', site.url)} />
     <link rel="alternate" hreflang="en" href={new URL('/en/', site.url)} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/', site.url)} />
     <meta property="og:title" content={t.meta.title} />
     <meta property="og:description" content={t.meta.description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
-    <meta name="theme-color" content="#edefea" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#161d22" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta name="color-scheme" content="dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
     <slot />

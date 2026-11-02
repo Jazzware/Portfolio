@@ -7,10 +7,13 @@ export const content = {
       title: 'Iván López Villegas, ingeniero de software',
       description: 'Ingeniero de software en Ciudad de México: C#/.NET, SQL Server y React. Autor de PaleoSharp, un juego para aprender C# que corre en el navegador.',
     },
-    nav: { project: 'PaleoSharp', experience: 'Experiencia', skills: 'Herramientas', contact: 'Contáctame', other: 'English', otherHref: '/en/' },
+    nav: { skip: 'Saltar al contenido', menu: 'Menú', sections: 'Secciones', project: 'PaleoSharp', experience: 'Experiencia', skills: 'Herramientas', contact: 'Contáctame', other: 'English', otherHref: '/en/' },
     hero: {
       role: 'Ingeniero de software en Ciudad de México',
-      lede: 'Más de ocho años desarrollando servicios backend en C# y .NET sobre SQL Server, e implementando procesos de CI/CD. He sido el punto de escalación cuando algo falla en producción, he migrado sistemas legacy a la web y he acompañado a otros ingenieros como mentor y Scrum Master.',
+      /** Nombre del mapa de trayectoria (lo leen los lectores de pantalla). */
+      path: 'Trayectoria, del primer trabajo al siguiente',
+      next: 'Próxima estación',
+      lede: 'Más de ocho años de desarrollo de software; desde 2020, servicios backend en C# y .NET sobre SQL Server, e implementación de procesos de CI/CD. He sido el punto de escalación cuando algo falla en producción, he migrado sistemas legacy a la web y he acompañado a otros ingenieros como mentor y Scrum Master.',
       seeking: 'Busco un puesto de Software Engineer III.',
       contact: 'Escríbeme',
       play: 'Jugar PaleoSharp',
@@ -31,12 +34,9 @@ export const content = {
       play: 'Jugar PaleoSharp',
       source: 'Ver el código',
       desktop: 'Se juega mejor en una computadora con teclado.',
-      shotLab: 'Reto de diseño LRU Cache resuelto: ocho casos, incluidos los ocultos y dos de rendimiento, pasan con tres estrellas.',
-      shotSite: 'El robot EXC-1 esquiva dos dinosaurios que patrullan el yacimiento camino a la bandera.',
     },
     experience: {
       title: 'Experiencia',
-      intro: 'Cada capa es un trabajo; su grosor, los años que duró. Las más recientes quedan arriba, como en un corte geológico.',
       practicesTitle: 'Lo que hago bien',
       practices: [
         'Resolver incidentes en producción como punto de escalación técnico.',
@@ -51,14 +51,16 @@ export const content = {
     skills: {
       title: 'Herramientas y formación',
       groups: [
-        { name: 'Backend', items: 'C#, .NET, ASP.NET, Entity Framework Core' },
-        { name: 'Datos', items: 'SQL Server, PostgreSQL, stored procedures, ETL, SSRS' },
-        { name: 'Frontend', items: 'React, TypeScript, AngularJS, Blazor' },
-        { name: 'Entrega y operación', items: 'Docker, GitHub Actions, Jenkins, TeamCity, Octopus Deploy, ELK, Jira' },
-        { name: 'También he usado', items: 'Java, PHP, Laravel, Python, Django' },
-        { name: 'Formación', items: 'Ingeniería de Software, Universidad del Valle de México' },
-        { name: 'Cursos', items: 'Scrum Master Training (Solera, 2023), Git y GitHub (Platzi, 2021), CCNA (UVM, 2018)' },
-        { name: 'Idiomas', items: 'Español nativo, inglés C1, francés A1' },
+        { name: 'Backend', items: ['C#', '.NET', 'ASP.NET', 'Entity Framework Core'] },
+        { name: 'Datos', items: ['SQL Server', 'PostgreSQL', 'stored procedures', 'ETL', 'SSRS'] },
+        { name: 'Frontend', items: ['React', 'TypeScript', 'AngularJS', 'Blazor'] },
+        { name: 'Entrega y operación', items: ['Docker', 'GitHub Actions', 'Jenkins', 'TeamCity', 'Octopus Deploy', 'ELK', 'Jira'] },
+        { name: 'También he usado', items: ['Java', 'PHP', 'Laravel', 'Python', 'Django'] },
+      ],
+      education: [
+        { name: 'Formación', items: ['Ingeniería de Software, Universidad del Valle de México'] },
+        { name: 'Cursos', items: ['Scrum Master Training (Solera, 2023)', 'Git y GitHub (Platzi, 2021)', 'CCNA (UVM, 2018)'] },
+        { name: 'Idiomas', items: ['Español nativo', 'Inglés C1', 'Francés A1'] },
       ],
     },
     contact: {
@@ -94,10 +96,12 @@ export const content = {
       title: 'Iván López Villegas, software engineer',
       description: 'Software engineer in Mexico City: C#/.NET, SQL Server and React. Author of PaleoSharp, a game for learning C# that runs in the browser.',
     },
-    nav: { project: 'PaleoSharp', experience: 'Experience', skills: 'Tools', contact: 'Contact me', other: 'Español', otherHref: '/' },
+    nav: { skip: 'Skip to content', menu: 'Menu', sections: 'Sections', project: 'PaleoSharp', experience: 'Experience', skills: 'Tools', contact: 'Contact me', other: 'Español', otherHref: '/' },
     hero: {
       role: 'Software engineer in Mexico City',
-      lede: 'Eight-plus years developing backend services in C# and .NET on SQL Server, and implementing CI/CD processes. I have been the escalation point when production breaks, moved legacy systems to the web, and supported other engineers as a mentor and Scrum Master.',
+      path: 'Career path, from the first job to the next one',
+      next: 'Next station',
+      lede: 'Over eight years of software development; since 2020, backend services in C# and .NET on SQL Server, and implementing CI/CD processes. I have been the escalation point when production breaks, moved legacy systems to the web, and supported other engineers as a mentor and Scrum Master.',
       seeking: 'I am looking for a Software Engineer III role.',
       contact: 'Email me',
       play: 'Play PaleoSharp',
@@ -118,12 +122,9 @@ export const content = {
       play: 'Play PaleoSharp',
       source: 'View the source',
       desktop: 'Best played on a computer with a keyboard.',
-      shotLab: 'LRU Cache design challenge solved: all eight cases, including hidden and performance ones, pass with three stars.',
-      shotSite: 'The EXC-1 robot dodges two patrolling dinosaurs on its way to the flag.',
     },
     experience: {
       title: 'Experience',
-      intro: 'Each layer is a job; its thickness, the years it lasted. The most recent sit on top, like in a geological cross-section.',
       practicesTitle: 'What I do well',
       practices: [
         'Resolving production incidents as the technical escalation point.',
@@ -138,14 +139,16 @@ export const content = {
     skills: {
       title: 'Tools and education',
       groups: [
-        { name: 'Backend', items: 'C#, .NET, ASP.NET, Entity Framework Core' },
-        { name: 'Data', items: 'SQL Server, PostgreSQL, stored procedures, ETL, SSRS' },
-        { name: 'Frontend', items: 'React, TypeScript, AngularJS, Blazor' },
-        { name: 'Delivery and operations', items: 'Docker, GitHub Actions, Jenkins, TeamCity, Octopus Deploy, ELK, Jira' },
-        { name: 'Also used', items: 'Java, PHP, Laravel, Python, Django' },
-        { name: 'Education', items: "Bachelor's degree in Software Engineering, Universidad del Valle de México" },
-        { name: 'Courses', items: 'Scrum Master Training (Solera, 2023), Git and GitHub (Platzi, 2021), CCNA (UVM, 2018)' },
-        { name: 'Languages', items: 'Spanish (native), English (C1), French (A1)' },
+        { name: 'Backend', items: ['C#', '.NET', 'ASP.NET', 'Entity Framework Core'] },
+        { name: 'Data', items: ['SQL Server', 'PostgreSQL', 'stored procedures', 'ETL', 'SSRS'] },
+        { name: 'Frontend', items: ['React', 'TypeScript', 'AngularJS', 'Blazor'] },
+        { name: 'Delivery and operations', items: ['Docker', 'GitHub Actions', 'Jenkins', 'TeamCity', 'Octopus Deploy', 'ELK', 'Jira'] },
+        { name: 'Also used', items: ['Java', 'PHP', 'Laravel', 'Python', 'Django'] },
+      ],
+      education: [
+        { name: 'Education', items: ["Bachelor's degree in Software Engineering, Universidad del Valle de México"] },
+        { name: 'Courses', items: ['Scrum Master Training (Solera, 2023)', 'Git and GitHub (Platzi, 2021)', 'CCNA (UVM, 2018)'] },
+        { name: 'Languages', items: ['Spanish (native)', 'English (C1)', 'French (A1)'] },
       ],
     },
     contact: {

@@ -1,0 +1,197 @@
+---
+// Mapa de la trayectoria al estilo de una línea del Metro: una estación por trabajo, de la más antigua a la actual,
+// y un tramo punteado hacia la siguiente estación (el puesto que busco), que lleva al formulario de contacto.
+// Como en los mapas de transporte, las estaciones van a la misma distancia aunque los trabajos duren distinto.
+//
+// Al cargar, un tren entra por la orilla, se detiene en cada estación (que se enciende) y se estaciona en la actual;
+// entonces el tramo punteado empieza a avanzar hacia la siguiente. Sin JavaScript o con movimiento reducido,
+// todo aparece ya encendido y el tren estacionado.
+import { content, type Lang } from '../data/content';
+import { jobs } from '../lib/jobs';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = content[lang];
+const stations = jobs(lang).reverse();
+---
+<ol class="map" aria-label={t.hero.path} style={`--n:${stations.length + 1}`}>
+  {stations.map((s) => (
+    <li class:list={['station', { now: s.current }]}>
+      {s.current && <span class="train" aria-hidden="true"></span>}
+      <a href={`#${s.id}`}>
+        <span class="dot" aria-hidden="true"></span>
+        <span class="year">{s.current ? `${s.startYear} – ${t.experience.present}` : s.startYear}</span>
+        <span class="company">{s.company}</span>
+        <span class="role">{s.role[lang]}</span>
+      </a>
+    </li>
+  ))}
+  <li class="station next">
+    <a href="#contacto">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="next-label">{t.hero.next}</span>
+      <span class="seeking">{t.hero.seeking}</span>
+    </a>
+  </li>
+</ol>
+
+<script>
+  const map = document.querySelector<HTMLElement>('.map');
+  const train = map?.querySelector<HTMLElement>('.train');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (map && train && !calm && 'animate' in train) {
+    const stations = [...map.querySelectorAll<HTMLElement>('.station:not(.next)')];
+    const now = stations.findIndex((s) => s.classList.contains('now'));
+    const center = (el: Element) => { const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
+    const dots = stations.slice(0, now + 1).map((s) => center(s.querySelector('.dot')!));
+    const end = dots[now];
+    // El tren ya está estacionado junto a la estación actual; cada parada es la misma posición relativa a su estación.
+    const stops = dots.map((d) => ({ x: d.x - end.x, y: d.y - end.y }));
+    const vertical = Math.abs(stops[0].y) > Math.abs(stops[0].x);
+    const box = train.getBoundingClientRect();
+    const start = vertical ? { x: stops[0].x, y: stops[0].y - 110 } : { x: -(box.right + 40), y: stops[0].y };
+
+    const ENTER = 1100, LEG = 620, DWELL = 300, DELAY = 300;
+    const at = (p: { x: number; y: number }) => `${p.x}px ${p.y}px`;
+    const frames: Keyframe[] = [{ translate: at(start), opacity: vertical ? 0 : 1, offset: 0, easing: 'cubic-bezier(.25, .1, .25, 1)' }];
+    const arrivals: number[] = [];
+    let time = ENTER;
+    stops.forEach((p, i) => {
+      arrivals.push(time);
+      frames.push({ translate: at(p), opacity: 1, offset: time, easing: 'linear' });
+      if (i < stops.length - 1) {
+        time += DWELL;
+        frames.push({ translate: at(p), opacity: 1, offset: time, easing: 'cubic-bezier(.55, 0, .3, 1)' });
+        time += LEG;
+      }
+    });
+    frames.forEach((f) => { f.offset = (f.offset as number) / time; });
+
+    map.classList.add('ride');
+    train.animate(frames, { duration: time, delay: DELAY, fill: 'backwards' });
+    stations.forEach((s, i) => { if (i <= now) setTimeout(() => s.classList.add('lit'), DELAY + arrivals[i]); });
+    setTimeout(() => map.classList.add('arrived'), DELAY + time);
+  }
+</script>
+
+<style>
+  .map {
+    --dot: 30px;
+    --band: 12px;
+    --train-w: 58px;
+    --train-h: 22px;
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    margin-top: 88px;
+  }
+  /* La línea entra desde el borde de la pantalla hasta la primera estación. */
+  .map::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--dot) / 2 - var(--band) / 2);
+    left: calc(50% - 50vw);
+    width: calc(50vw - 50% + var(--dot) / 2);
+    height: var(--band);
+    background: var(--linea);
+    box-shadow: var(--brillo);
+  }
+
+  .station { position: relative; padding-right: 20px; }
+  /* Tramo de cada estación a la siguiente. */
+  .station:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--dot) / 2 - var(--band) / 2);
+    left: calc(var(--dot) / 2);
+    width: 100%;
+    height: var(--band);
+    background: var(--linea);
+    box-shadow: var(--brillo);
+  }
+  /* El tramo hacia el siguiente puesto todavía no existe: va punteado y sin brillo. */
+  .station.now::before {
+    background: repeating-linear-gradient(90deg, var(--linea) 0 16px, transparent 16px 28px);
+    box-shadow: none;
+  }
+
+  .station a { position: relative; z-index: 1; display: flex; flex-direction: column; color: var(--texto); text-decoration: none; }
+  .dot {
+    width: var(--dot); height: var(--dot);
+    margin-bottom: 20px;
+    border-radius: 50%;
+    background: var(--fondo);
+    border: 6px solid var(--texto);
+    transition: border-color 300ms ease, box-shadow 300ms ease, scale 200ms ease;
+  }
+  .now .dot { border-color: var(--senal); box-shadow: 0 0 0 5px var(--fondo), 0 0 0 9px var(--senal), 0 0 26px 6px color-mix(in srgb, var(--senal) 45%, transparent); }
+  .next .dot { border: 4px dashed var(--texto-2); }
+  .station a:hover .dot, .station a:focus-visible .dot { scale: 1.15; }
+
+  .year { font-family: var(--display); font-weight: 700; font-size: 26px; line-height: 1.1; }
+  .company { margin-top: 6px; font-weight: 600; font-size: 18px; line-height: 1.3; }
+  .role { font-size: 15px; line-height: 1.4; color: var(--texto-2); }
+  .next-label { font-size: 15px; color: var(--texto-2); }
+  .seeking { margin-top: 2px; font-family: var(--display); font-weight: 600; font-size: 24px; line-height: 1.15; color: var(--senal); }
+  .year, .company, .role, .next-label, .seeking { transition: opacity 400ms ease; }
+  .station a:hover .company,
+  .station a:hover .seeking { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
+  .station a:focus-visible { outline-offset: 6px; }
+
+  /* El tren: naranja como los trenes clásicos del Metro, con ventanas y un faro al frente. */
+  .train {
+    position: absolute; z-index: 2;
+    left: calc(-1 * var(--train-w) - 8px);
+    top: calc(var(--dot) / 2 - var(--train-h) / 2);
+    width: var(--train-w); height: var(--train-h);
+    border-radius: 6px 12px 12px 6px;
+    background:
+      linear-gradient(90deg, transparent 0 7px, #0b1020c0 7px 15px, transparent 15px 19px, #0b1020c0 19px 27px, transparent 27px 31px, #0b1020c0 31px 39px, transparent 39px) 0 6px / 100% 8px no-repeat,
+      var(--senal);
+    box-shadow: 0 0 0 2px var(--fondo), 0 0 22px color-mix(in srgb, var(--senal) 50%, transparent);
+  }
+  .train::after {
+    content: '';
+    position: absolute; right: 3px; top: 50%;
+    width: 5px; height: 5px; border-radius: 50%; translate: 0 -50%;
+    background: #fff6dc;
+    box-shadow: 0 0 10px 4px #fff0c880;
+  }
+
+  /* Durante el recorrido: estaciones apagadas hasta que llega el tren. */
+  .ride .station:not(.lit):not(.next) .dot { border-color: var(--borde); box-shadow: none; }
+  .ride .station:not(.lit):not(.next) a > :not(.dot) { opacity: 0.4; }
+  .ride:not(.arrived) .next a > :not(.dot) { opacity: 0.4; }
+  .ride .lit .dot { animation: llegada 520ms ease-out; }
+  .arrived .station.now::before { animation: avanzar 900ms linear 6; }
+  .arrived .next .dot { animation: girar 5.4s linear; }
+  @keyframes llegada { 40% { scale: 1.3; } }
+  @keyframes avanzar { to { background-position: 28px 0; } }
+  @keyframes girar { to { rotate: 1turn; } }
+
+  /* En pantallas angostas la línea corre hacia abajo. */
+  @media (max-width: 760px) {
+    .map { display: block; margin-top: 64px; }
+    .map::before {
+      top: -32px; left: calc(var(--dot) / 2 - var(--band) / 2);
+      width: var(--band); height: calc(32px + var(--dot) / 2);
+    }
+    .station { padding: 0 0 32px calc(var(--dot) + 18px); }
+    .station:not(:last-child)::before {
+      top: calc(var(--dot) / 2); left: calc(var(--dot) / 2 - var(--band) / 2);
+      width: var(--band); height: 100%;
+    }
+    .station.now::before { background: repeating-linear-gradient(180deg, var(--linea) 0 16px, transparent 16px 28px); }
+    .station a { position: static; }
+    .dot { position: absolute; z-index: 3; left: 0; top: 0; margin: 0; }
+    .year { font-size: 24px; }
+    /* El tren baja por la línea: girado, con el faro hacia abajo, justo arriba de la estación. */
+    .train {
+      rotate: 90deg;
+      left: calc(var(--dot) / 2 - var(--train-w) / 2);
+      top: calc(-1 * var(--train-w) / 2 - 8px - var(--train-h) / 2);
+    }
+    @keyframes avanzar { to { background-position: 0 28px; } }
+  }
+</style>

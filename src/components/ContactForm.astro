@@ -26,7 +26,7 @@ const f = content[lang].contact.form;
   <div class="field">
     <label for="cf-mensaje">{f.message}</label>
     <textarea id="cf-mensaje" name="mensaje" rows="7" required minlength="10" maxlength="5000" aria-describedby="cf-mensaje-hint cf-mensaje-error"></textarea>
-    <p class="hint muted" id="cf-mensaje-hint">{f.messageHint}</p>
+    <p class="hint" id="cf-mensaje-hint">{f.messageHint}</p>
     <p class="error" id="cf-mensaje-error" hidden>{f.errors.mensaje}</p>
   </div>
 
@@ -44,7 +44,7 @@ const f = content[lang].contact.form;
   )}
 
   <div class="send">
-    <button class="button solid" type="submit">{f.send}</button>
+    <button class="btn btn-primary" type="submit">{f.send}</button>
     <p class="status" role="status" aria-live="polite"></p>
   </div>
 </form>
@@ -119,29 +119,24 @@ const f = content[lang].contact.form;
 </script>
 
 <style>
-  .contact-form { display: flex; flex-direction: column; gap: 20px; background: var(--superficie); border: 1px solid var(--linea); border-radius: 12px; padding: 28px; }
-  .field { display: flex; flex-direction: column; gap: 6px; }
-  label { font-weight: 620; font-size: 16px; }
+  .contact-form { display: flex; flex-direction: column; gap: 22px; }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  label { font-weight: 600; font-size: 17px; }
   input, textarea {
-    font: inherit; font-size: 17px; color: var(--pizarra);
-    background: var(--caliza); border: 1.5px solid var(--linea); border-radius: 8px;
-    padding: 11px 14px; width: 100%;
+    width: 100%; padding: 12px 14px;
+    font: inherit; font-size: 18px; color: var(--texto);
+    background: var(--fondo); border: 2px solid var(--borde); border-radius: 8px;
+    transition: border-color 150ms ease;
   }
-  textarea { resize: vertical; min-height: 150px; line-height: 1.5; }
-  input:focus-visible, textarea:focus-visible { outline: 3px solid var(--verdin); outline-offset: 1px; border-color: var(--verdin); }
-  [aria-invalid='true'] { border-color: #b3412e; }
-  .hint { font-size: 15px; }
-  .error { font-size: 15px; color: #b3412e; font-weight: 560; }
-  @media (prefers-color-scheme: dark) {
-    [aria-invalid='true'] { border-color: #ec8a74; }
-    .error { color: #ec8a74; }
-  }
+  input:hover, textarea:hover { border-color: var(--texto-2); }
+  textarea { resize: vertical; min-height: 168px; line-height: 1.5; }
+  input:focus-visible, textarea:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; border-color: var(--texto); }
+  [aria-invalid='true'] { border-color: var(--error); }
+  .hint { font-size: 15px; color: var(--texto-2); }
+  .error { font-size: 15px; font-weight: 600; color: var(--error); }
   .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
-  .send { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .send .button:disabled { opacity: 0.6; cursor: progress; }
-  .status { font-weight: 560; }
-  .status[data-kind='ok'] { color: var(--verdin); }
-  .status[data-kind='bad'] { color: #b3412e; }
-  @media (prefers-color-scheme: dark) { .status[data-kind='bad'] { color: #ec8a74; } }
-  @media (max-width: 640px) { .contact-form { padding: 20px 16px; } }
+  .send { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+  .status { font-weight: 600; }
+  .status[data-kind='ok'] { color: var(--ok); }
+  .status[data-kind='bad'] { color: var(--error); }
 </style>
