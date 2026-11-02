@@ -1,0 +1,180 @@
+---
+import { Image } from 'astro:assets';
+import { content, type Lang } from '../data/content';
+import { site } from '../config';
+import Strata from './Strata.astro';
+import labShot from '../assets/paleosharp-lab.png';
+import siteShot from '../assets/paleosharp-yacimiento.png';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = content[lang];
+const cv = site.cv[lang];
+const [first, ...rest] = site.name.split(' ');
+const nameLines = [first + ' ' + rest[0], rest.slice(1).join(' ')];
+const contactLinks = [
+  site.email && { label: t.contact.email, href: `mailto:${site.email}`, text: site.email, big: true },
+  site.linkedin && { label: t.contact.linkedin, href: site.linkedin, text: site.linkedin.replace(/^https?:\/\/(www\.)?/, '') },
+  site.github && { label: t.contact.github, href: site.github, text: site.github.replace(/^https?:\/\/(www\.)?/, '') },
+  cv && { label: t.contact.cv, href: cv, text: t.hero.cv },
+].filter(Boolean) as { label: string; href: string; text: string; big?: boolean }[];
+---
+<header class="top wrap">
+  <a class="home" href={lang === 'es' ? '/' : '/en/'}>{site.name}</a>
+  <nav aria-label={lang === 'es' ? 'Secciones' : 'Sections'}>
+    <a href="#paleosharp">{t.nav.project}</a>
+    <a href="#experiencia">{t.nav.experience}</a>
+    <a href="#herramientas">{t.nav.skills}</a>
+    <a href="#contacto">{t.nav.contact}</a>
+    <a class="lang" href={t.nav.otherHref} hreflang={lang === 'es' ? 'en' : 'es'} lang={lang === 'es' ? 'en' : 'es'}>{t.nav.other}</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <h1>{nameLines.map((line) => <span>{line}</span>)}</h1>
+    <p class="role">{t.hero.role}</p>
+    <p class="lede">{t.hero.lede}</p>
+    <p class="seeking">{t.hero.seeking}</p>
+    <div class="actions">
+      {site.email && <a class="button solid" href={`mailto:${site.email}`}>{t.hero.contact}</a>}
+      <a class:list={['button', { solid: !site.email }]} href={site.paleosharp.play}>{t.hero.play}</a>
+      {cv && <a class="button" href={cv} download>{t.hero.cv}</a>}
+    </div>
+  </section>
+
+  <section id="paleosharp" class="section project wrap" aria-labelledby="paleosharp-title">
+    <div class="project-text">
+      <h2 id="paleosharp-title">{t.project.title}</h2>
+      <p class="summary">{t.project.summary}</p>
+      <p class="muted">{t.project.scope}</p>
+      <h3>{t.project.howTitle}</h3>
+      <ul class="how">
+        {t.project.how.map((item) => <li>{item}</li>)}
+      </ul>
+      <p class="stack muted">{t.project.stack}</p>
+      <div class="actions">
+        <a class="button solid" href={site.paleosharp.play}>{t.project.play}</a>
+        {site.paleosharp.source && <a class="button" href={site.paleosharp.source}>{t.project.source}</a>}
+      </div>
+      <p class="muted small">{t.project.desktop}</p>
+    </div>
+    <div class="shots">
+      <figure class="shot lab">
+        <Image src={labShot} alt={t.project.shotLab} widths={[640, 960, 1440]} sizes="(max-width: 900px) 100vw, 640px" loading="lazy" />
+      </figure>
+      <figure class="shot site">
+        <Image src={siteShot} alt={t.project.shotSite} widths={[480, 960]} sizes="(max-width: 900px) 80vw, 400px" loading="lazy" />
+      </figure>
+    </div>
+  </section>
+
+  <section id="experiencia" class="section wrap" aria-labelledby="experiencia-title">
+    <div class="experience-head">
+      <div>
+        <h2 id="experiencia-title">{t.experience.title}</h2>
+        <p class="muted intro">{t.experience.intro}</p>
+      </div>
+      <div>
+        <h3>{t.experience.practicesTitle}</h3>
+        <ul class="practices">
+          {t.experience.practices.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    </div>
+    <Strata lang={lang} />
+  </section>
+
+  <section id="herramientas" class="section wrap" aria-labelledby="herramientas-title">
+    <h2 id="herramientas-title">{t.skills.title}</h2>
+    <dl class="skills">
+      {t.skills.groups.map((g) => (
+        <div><dt>{g.name}</dt><dd>{g.items}</dd></div>
+      ))}
+    </dl>
+  </section>
+
+  <section id="contacto" class="section contact wrap" aria-labelledby="contacto-title">
+    <h2 id="contacto-title">{t.contact.title}</h2>
+    <p class="lede">{t.contact.text}</p>
+    {contactLinks.length > 0 ? (
+      <ul class="contact-links">
+        {contactLinks.map((l) => (
+          <li class:list={{ big: l.big }}><span class="muted">{l.label}</span><a href={l.href}>{l.text}</a></li>
+        ))}
+      </ul>
+    ) : (
+      <p class="pending-note">Pendiente: agrega tu correo, LinkedIn y GitHub en src/config.ts.</p>
+    )}
+  </section>
+</main>
+
+<footer class="wrap foot muted">
+  <p>{t.footer}</p>
+</footer>
+
+<style>
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 24px; padding-bottom: 24px; }
+  .home { color: var(--pizarra); text-decoration: none; font-weight: 680; }
+  nav { display: flex; gap: 24px; flex-wrap: wrap; }
+  nav a { color: var(--pizarra); text-decoration: none; font-size: 16px; }
+  nav a:hover { text-decoration: underline; }
+  nav .lang { color: var(--verdin); }
+  @media (max-width: 800px) {
+    .top { flex-direction: column; align-items: flex-start; gap: 8px; }
+    nav { gap: 6px 18px; }
+  }
+
+  .hero { padding-top: 88px; }
+  h1 {
+    font-size: clamp(52px, 10.5vw, 136px);
+    font-stretch: 125%;
+    font-weight: 780;
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    display: flex; flex-direction: column;
+  }
+  .role { margin-top: 28px; font-size: clamp(22px, 2.6vw, 28px); font-stretch: 112%; font-weight: 560; }
+  .lede { margin-top: 16px; max-width: var(--texto); font-size: 20px; line-height: 1.6; }
+  .seeking { margin-top: 16px; font-weight: 620; }
+  .hero .actions { margin-top: 32px; }
+  @media (max-width: 640px) { .hero { padding-top: 40px; } .lede { font-size: 18px; } }
+
+  .project { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 56px; align-items: start; }
+  .project-text { display: flex; flex-direction: column; gap: 16px; max-width: 34em; }
+  .project-text .summary { font-size: 20px; }
+  .project-text h3 { margin-top: 12px; }
+  .how { padding-left: 1.1em; display: flex; flex-direction: column; gap: 10px; }
+  .how li::marker { color: var(--ocre); }
+  .stack { font-size: 16px; }
+  .project .actions { margin-top: 8px; }
+  .small { font-size: 15px; }
+  .shots { position: relative; padding-bottom: 120px; margin-top: 72px; }
+  .shot img { border-radius: 10px; border: 1px solid var(--linea); box-shadow: 0 24px 48px -28px #1d262c80; }
+  .shot.site { position: absolute; width: 58%; right: -5%; bottom: 0; }
+  @media (max-width: 900px) {
+    .project { grid-template-columns: 1fr; gap: 40px; }
+    .shots { margin-top: 0; padding-bottom: 0; display: flex; flex-direction: column; gap: 16px; }
+    .shot.site { position: static; width: 80%; }
+  }
+
+  .experience-head { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 56px; margin-bottom: 56px; }
+  .intro { margin-top: 16px; max-width: 30em; }
+  .practices { margin-top: 12px; padding-left: 1.1em; display: flex; flex-direction: column; gap: 8px; }
+  .practices li::marker { color: var(--ocre); }
+  @media (max-width: 900px) { .experience-head { grid-template-columns: 1fr; gap: 32px; } }
+
+  .skills { margin-top: 32px; border-top: 1px solid var(--linea); }
+  .skills div { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 56px; padding: 16px 0; border-bottom: 1px solid var(--linea); }
+  .skills dt { font-weight: 620; }
+  @media (max-width: 640px) { .skills div { grid-template-columns: 1fr; gap: 2px; } }
+
+  .contact .lede { margin-top: 16px; max-width: 36em; font-size: 20px; }
+  .contact-links { list-style: none; padding: 0; margin-top: 32px; display: flex; flex-direction: column; gap: 14px; }
+  .contact-links li { display: grid; grid-template-columns: 9em 1fr; gap: 16px; align-items: baseline; }
+  .contact-links li.big a { font-size: clamp(26px, 4.4vw, 48px); font-stretch: 118%; font-weight: 680; line-height: 1.1; word-break: break-all; }
+  @media (max-width: 640px) { .contact-links li { grid-template-columns: 1fr; gap: 0; } }
+  .pending-note { margin-top: 24px; padding: 14px 18px; border: 1.5px dashed var(--ocre); border-radius: 8px; color: var(--lutita); max-width: 36em; }
+
+  .foot { padding-top: 96px; padding-bottom: 40px; font-size: 15px; }
+</style>
