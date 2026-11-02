@@ -1,0 +1,16 @@
+{
+  "name": "portafolio",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "npm run build && npx --yes wrangler@3 pages deploy dist --project-name portafolio"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.2.8",
+    "astro": "^5.18.2"
+  }
+}
