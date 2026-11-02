@@ -1,0 +1,147 @@
+---
+// Formulario «Contáctame». Lo atiende functions/api/contacto.ts (Cloudflare Pages Function).
+// Con JavaScript se envía sin recargar; sin JavaScript también funciona (la función redirige de vuelta).
+import { content, type Lang } from '../data/content';
+import { site } from '../config';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const f = content[lang].contact.form;
+---
+<form class="contact-form" method="post" action="/api/contacto" novalidate data-messages={JSON.stringify(f)}>
+  <input type="hidden" name="lang" value={lang} />
+
+  <div class="field">
+    <label for="cf-nombre">{f.name}</label>
+    <input id="cf-nombre" name="nombre" type="text" autocomplete="name" required minlength="2" maxlength="100" aria-describedby="cf-nombre-error" />
+    <p class="error" id="cf-nombre-error" hidden>{f.errors.nombre}</p>
+  </div>
+
+  <div class="field">
+    <label for="cf-correo">{f.email}</label>
+    <input id="cf-correo" name="correo" type="email" autocomplete="email" required maxlength="200" aria-describedby="cf-correo-error" />
+    <p class="error" id="cf-correo-error" hidden>{f.errors.correo}</p>
+  </div>
+
+  <div class="field">
+    <label for="cf-mensaje">{f.message}</label>
+    <textarea id="cf-mensaje" name="mensaje" rows="7" required minlength="10" maxlength="5000" aria-describedby="cf-mensaje-hint cf-mensaje-error"></textarea>
+    <p class="hint muted" id="cf-mensaje-hint">{f.messageHint}</p>
+    <p class="error" id="cf-mensaje-error" hidden>{f.errors.mensaje}</p>
+  </div>
+
+  <!-- Trampa para bots: las personas no la ven ni la llenan. -->
+  <div class="trap" aria-hidden="true">
+    <label for="cf-sitio">Sitio web</label>
+    <input id="cf-sitio" name="sitio_web" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  {site.turnstileSiteKey && (
+    <>
+      <div class="cf-turnstile" data-sitekey={site.turnstileSiteKey} data-language={lang}></div>
+      <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    </>
+  )}
+
+  <div class="send">
+    <button class="button solid" type="submit">{f.send}</button>
+    <p class="status" role="status" aria-live="polite"></p>
+  </div>
+</form>
+
+<script>
+  type Messages = {
+    send: string; sending: string; sent: string;
+    errors: Record<'nombre' | 'correo' | 'mensaje' | 'captcha' | 'unavailable' | 'network', string>;
+  };
+
+  for (const form of document.querySelectorAll<HTMLFormElement>('.contact-form')) {
+    const m: Messages = JSON.parse(form.dataset.messages!);
+    const status = form.querySelector<HTMLElement>('.status')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const fields = ['nombre', 'correo', 'mensaje'] as const;
+
+    const show = (text: string, kind: 'ok' | 'bad' | '') => { status.textContent = text; status.dataset.kind = kind; };
+    const markInvalid = (bad: string[]) => {
+      for (const name of fields) {
+        const input = form.elements.namedItem(name) as HTMLInputElement;
+        const invalid = bad.includes(name);
+        input.setAttribute('aria-invalid', String(invalid));
+        form.querySelector<HTMLElement>(`#cf-${name}-error`)!.hidden = !invalid;
+      }
+      if (bad.length) (form.elements.namedItem(bad[0]) as HTMLElement).focus();
+    };
+    const localErrors = () => {
+      const data = new FormData(form);
+      const value = (k: string) => String(data.get(k) ?? '').trim();
+      const bad: string[] = [];
+      if (value('nombre').length < 2) bad.push('nombre');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value('correo'))) bad.push('correo');
+      if (value('mensaje').length < 10) bad.push('mensaje');
+      return bad;
+    };
+
+    // Vuelta desde el envío sin JavaScript.
+    if (location.hash === '#contacto-enviado') show(m.sent, 'ok');
+    if (location.hash === '#contacto-error') show(m.errors.network, 'bad');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const bad = localErrors();
+      markInvalid(bad);
+      if (bad.length) { show('', ''); return; }
+
+      button.disabled = true;
+      button.textContent = m.sending;
+      show('', '');
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: new FormData(form), headers: { accept: 'application/json' } });
+        const data = await res.json().catch(() => null) as { ok: boolean; error?: string; fields?: string[] } | null;
+        if (data?.ok) {
+          form.reset();
+          show(m.sent, 'ok');
+        } else if (data?.error === 'invalid' && data.fields) {
+          markInvalid(data.fields);
+        } else if (data?.error === 'captcha') {
+          show(m.errors.captcha, 'bad');
+          (window as unknown as { turnstile?: { reset(): void } }).turnstile?.reset();
+        } else {
+          show(m.errors.unavailable, 'bad');
+        }
+      } catch {
+        show(m.errors.network, 'bad');
+      } finally {
+        button.disabled = false;
+        button.textContent = m.send;
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact-form { display: flex; flex-direction: column; gap: 20px; background: var(--superficie); border: 1px solid var(--linea); border-radius: 12px; padding: 28px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  label { font-weight: 620; font-size: 16px; }
+  input, textarea {
+    font: inherit; font-size: 17px; color: var(--pizarra);
+    background: var(--caliza); border: 1.5px solid var(--linea); border-radius: 8px;
+    padding: 11px 14px; width: 100%;
+  }
+  textarea { resize: vertical; min-height: 150px; line-height: 1.5; }
+  input:focus-visible, textarea:focus-visible { outline: 3px solid var(--verdin); outline-offset: 1px; border-color: var(--verdin); }
+  [aria-invalid='true'] { border-color: #b3412e; }
+  .hint { font-size: 15px; }
+  .error { font-size: 15px; color: #b3412e; font-weight: 560; }
+  @media (prefers-color-scheme: dark) {
+    [aria-invalid='true'] { border-color: #ec8a74; }
+    .error { color: #ec8a74; }
+  }
+  .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .send { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .send .button:disabled { opacity: 0.6; cursor: progress; }
+  .status { font-weight: 560; }
+  .status[data-kind='ok'] { color: var(--verdin); }
+  .status[data-kind='bad'] { color: #b3412e; }
+  @media (prefers-color-scheme: dark) { .status[data-kind='bad'] { color: #ec8a74; } }
+  @media (max-width: 640px) { .contact-form { padding: 20px 16px; } }
+</style>
