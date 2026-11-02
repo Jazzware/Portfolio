@@ -24,14 +24,19 @@ en local: `npm run build && npx wrangler pages dev dist`.
 | --- | --- |
 | `src/config.ts` | Dominio, LinkedIn, GitHub, CV, enlaces del juego y la clave pública del captcha. Un campo en `null` oculta su enlace. |
 | `functions/api/contacto.ts` | Recibe el formulario «Contáctame» y te lo manda por correo (Resend). |
-| `src/data/experience.ts` | Los trabajos, del más reciente al más antiguo. `pending: true` marca datos de ejemplo (se ven punteados); quítalo al poner los reales. |
+| `src/data/experience.ts` | Los trabajos, del más reciente al más antiguo. `pending: true` marca datos de ejemplo (se ven en gris, con una etiqueta); quítalo al poner los reales. |
 | `src/data/content.ts` | Todos los textos, en español e inglés. |
-| `src/assets/` | Capturas del juego (Astro las convierte a WebP en varios tamaños). |
+| `src/assets/` | Capturas del juego. El diseño actual no las usa; sirven si agregas una imagen de vista previa (`og:image`). |
 | `public/` | Archivos que se sirven tal cual: el CV en PDF, el ícono, `_headers`. |
 
-La experiencia se dibuja como una columna estratigráfica: cada trabajo es una capa con grosor proporcional a su
-duración y la más reciente queda arriba. Al llegar a esa sección, las capas se depositan de abajo hacia arriba
-(no se anima si el sistema pide reducir el movimiento).
+La trayectoria se dibuja como una línea del Metro de la Ciudad de México. En la portada, cada trabajo es una
+estación, del más antiguo al actual y a la misma distancia (como en un mapa de transporte), y un tramo punteado
+lleva a la siguiente estación: el puesto que buscas, que enlaza al formulario. Cada estación lleva a su parada en
+la sección de experiencia, donde la misma línea corre hacia abajo.
+
+Movimiento (todo se desactiva si el sistema pide reducir el movimiento, y sin JavaScript la página se ve completa):
+al cargar, un tren entra por la orilla, se detiene en cada estación y se estaciona en la actual; luego el tramo
+punteado avanza hacia la siguiente. En la sección de experiencia, la línea se enciende conforme lees.
 
 ## Publicar en Cloudflare Pages
 
