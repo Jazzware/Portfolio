@@ -2,7 +2,7 @@
 // Un campo en null oculta su enlace en la página.
 export const site = {
   /** Dirección final del portafolio (para enlaces canónicos y el mapa del sitio). */
-  url: 'https://portafolio.pages.dev',
+  url: 'https://jazzware.dev',
   name: 'Iván López Villegas',
   /**
    * Correo visible en la página. En null, la gente te escribe solo con el formulario «Contáctame»
@@ -16,7 +16,7 @@ export const site = {
   /** Ruta o URL del CV en PDF; por ejemplo '/cv-ivan-lopez.pdf' si lo pones en public/. */
   cv: { es: null as string | null, en: null as string | null },
   paleosharp: {
-    play: 'https://paleosharp.pages.dev',
+    play: 'https://paleosharp.jazzware.dev',
     /** Repositorio público del juego, si decides abrirlo. */
     source: null as string | null,
   },

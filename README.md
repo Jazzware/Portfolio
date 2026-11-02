@@ -1,7 +1,9 @@
 # Portafolio de Iván López Villegas
 
+Publicado en https://jazzware.dev.
+
 Sitio estático en [Astro](https://astro.build), en español (`/`) e inglés (`/en/`). Enlaza a
-[PaleoSharp](https://paleosharp.pages.dev), el juego para aprender C# que corre en el navegador.
+[PaleoSharp](https://paleosharp.jazzware.dev), el juego para aprender C# que corre en el navegador.
 
 ## Trabajar en local
 
@@ -37,8 +39,9 @@ duración y la más reciente queda arriba. Al llegar a esa sección, las capas s
 2. En Cloudflare, *Workers & Pages → Create → Pages → Connect to Git*, elige el repositorio.
    Framework preset: **Astro**. Build command: `npm run build`. Output: `dist`.
 3. Cada push a `main` publica. Queda en `https://<proyecto>.pages.dev`.
-4. Con dominio propio: *Custom domains* → agrega `tudominio` (y `www` si quieres). Pon esa dirección en
-   `site.url` de `src/config.ts`. El juego va en `paleosharp.tudominio`, en su propio proyecto de Pages.
+4. Dominio: en el proyecto, *Custom domains* → `jazzware.dev` (y `www.jazzware.dev` si quieres; Cloudflare lo
+   redirige). Ya está en `site.url` de `src/config.ts`. El juego vive en `paleosharp.jazzware.dev`, en su propio
+   proyecto de Pages.
 
 ## Formulario «Contáctame»
 
@@ -52,7 +55,9 @@ Lo envía [Resend](https://resend.com) (gratis hasta 3,000 correos al mes).
    - `CONTACT_TO`: tu correo.
 3. Vuelve a desplegar (un push basta). Mientras falten, el formulario dice que no está disponible y sugiere LinkedIn.
 
-Cuando tengas dominio propio, verifícalo en Resend y agrega `CONTACT_FROM`, por ejemplo `Portafolio <hola@tudominio>`.
+Para que los correos salgan de tu dominio (mejor entrega, menos spam): en Resend, *Domains → Add domain* →
+`jazzware.dev`; como el DNS está en Cloudflare, Resend agrega los registros solo (o los copias a mano). Luego agrega
+`CONTACT_FROM` = `Portafolio <contacto@jazzware.dev>` en Cloudflare. No necesitas un buzón real en esa dirección.
 
 **Contra spam:** hay un campo trampa que los bots llenan y las personas no ven. Si empieza a llegar spam, activa
 [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) (gratis): pon la *site key* en
