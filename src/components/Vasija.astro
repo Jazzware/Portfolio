@@ -1,0 +1,309 @@
+---
+// Fig. 3: la trayectoria como vasija de rollos (MASTER.md §1 y §8). Un rollo por puesto, el más antiguo en la base;
+// la altura de cada rollo sigue los meses en el puesto (mínimo un rollo legible). Arriba, punteado, el siguiente.
+// Base accesible y móvil: un catálogo de <details> que funciona sin JavaScript. La vasija lo reemplaza en
+// pantallas anchas cuando hay JavaScript, y toma el detalle de cada puesto de sus fuentes ocultas (.fuente).
+// La losa de la base es la carrera, y es una recompensa oculta (MASTER.md §9): no tiene rótulo; al presionarla se
+// rellena y el panel muestra la carrera.
+import { content, type Lang } from '../data/content';
+import { jobs } from '../lib/jobs';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = content[lang].experience;
+const v = t.vessel;
+const lista = jobs(lang);
+const max = Math.max(...lista.map((j) => j.months));
+const fecha = (s: string | null) => (s ? s.replace('-', '.') : t.present);
+const cuando = (j: (typeof lista)[number]) => `${fecha(j.from)}–${fecha(j.to)}`;
+
+// Geometría, en píxeles reales: el dibujo no se escala, así los rótulos HTML caen en su lugar exacto.
+const EJE = 200, BASE = 12, PARED = 11, SIGUIENTE = 26, MINIMO = 26, PX_MES = 3, PASO = 52, ANCHO = 420, RX = ANCHO;
+const viejos = [...lista].reverse();
+const alturas = viejos.map((j) => Math.max(MINIMO, j.months * PX_MES));
+const TOTAL = BASE + alturas.reduce((a, b) => a + b, 0);
+const Y0 = 34;
+const BY = Y0 + TOTAL + SIGUIENTE / 2;
+const N = lista.length + 1;
+const ALTO = Math.max(BY + 16, Y0 + (N - 1) * PASO + 30);
+const Y = (h: number) => BY - h;
+const r = (h: number) => { const k = h / TOTAL; return k <= 0.8 ? 70 + 100 * Math.sin((k / 0.8) * Math.PI / 2) : 170 - 22 * Math.pow((k - 0.8) / 0.2, 1.6); };
+const p = (x: number, y: number) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+const exterior = (h0: number, h1: number) => { const pts: string[] = []; for (let h = h0; h < h1; h += 3) pts.push(p(EJE + r(h), Y(h))); pts.push(p(EJE + r(h1), Y(h1))); return pts; };
+const corte = (h0: number, h1: number) => {
+  const a: string[] = [], b: string[] = [];
+  for (let h = h0; h < h1; h += 2) { a.push(p(EJE - r(h), Y(h))); b.push(p(EJE - r(h) + PARED, Y(h))); }
+  a.push(p(EJE - r(h1), Y(h1))); b.push(p(EJE - r(h1) + PARED, Y(h1)));
+  return `M ${a.join(' L ')} L ${b.reverse().join(' L ')} Z`;
+};
+const ranura = (k: number) => Y0 + k * PASO;
+
+// Rollos, de la base al borde. `k` es la posición del rótulo: 0 = el siguiente, 1 = el puesto más reciente.
+let h = BASE;
+const rollos = viejos.map((j, i) => {
+  const h0 = h + 0.75, h1 = h + alturas[i] - 0.75, medio = h + alturas[i] / 2;
+  const rollo = { k: lista.length - i, d: corte(h0, h1), union: { x1: EJE, y: Y(h), x2: EJE + r(h) }, medio };
+  h += alturas[i];
+  return rollo;
+});
+const base = `M ${p(EJE - r(0), Y(0))} L ${p(EJE, Y(0))} L ${p(EJE, Y(BASE - 0.75))} L ${p(EJE - r(BASE - 0.75), Y(BASE - 0.75))} Z`;
+const KB = N; // índice de la base, después del último puesto
+const golpe = { left: EJE - r(BASE), top: Y(BASE), width: 2 * r(BASE), height: BASE + 12 };
+const contorno = `M ${p(EJE, Y(0))} L ${exterior(0, TOTAL).join(' L ')} M ${p(EJE - r(TOTAL), Y(TOTAL))} L ${p(EJE + r(TOTAL), Y(TOTAL))}`;
+const sig = {
+  corte: corte(TOTAL + 0.75, TOTAL + SIGUIENTE - 0.75),
+  exterior: `M ${exterior(TOTAL, TOTAL + SIGUIENTE).join(' L ')} L ${p(EJE - r(TOTAL + SIGUIENTE), Y(TOTAL + SIGUIENTE))}`,
+  medio: TOTAL + SIGUIENTE / 2,
+};
+const medios = [sig.medio, ...[...rollos].reverse().map((c) => c.medio)];
+const guias = medios.map((m, k) => `M ${p(EJE + r(m) + 6, Y(m))} L ${p(RX - 44, Y(m))} L ${p(RX - 12, ranura(k))}`);
+const rotulos = [
+  { nombre: v.next.name, rol: v.next.role, dato: v.next.when },
+  ...lista.map((j) => ({ nombre: j.company, rol: j.role[lang], dato: `${cuando(j)}   ${j.duration}` })),
+];
+---
+<div class="trayectoria">
+  <ol class="catalogo" aria-label={v.list}>
+    {lista.map((j, i) => (
+      <li data-revela>
+        <details open={i === 0}>
+          <summary>
+            <span class="cuando mono">{cuando(j)}</span>
+            <span class="quien"><b>{j.company}</b><span>{j.role[lang]}{j.place && `, ${j.place}`}</span></span>
+            <span class="dur"><span class="pista"><span class="mide" style={`--w: ${(j.months / max).toFixed(3)}`}></span></span><span class="mono">{j.duration}</span></span>
+            <span class="mas" aria-hidden="true"></span>
+          </summary>
+          <div class="detalle">
+            <ul class="filas">{j.highlights[lang].map((x) => <li>{x}</li>)}</ul>
+            {j.stack && <p class="chico pila">{v.stack}: {j.stack}</p>}
+          </div>
+        </details>
+      </li>
+    ))}
+  </ol>
+
+  <figure class="vasija" aria-labelledby="vasija-pie" data-mensaje={content[lang].rewards.coil}>
+    <div class="vasija-grid">
+      <div class="dibujo" style={`height: ${ALTO}px`}>
+        <svg viewBox={`0 0 ${ANCHO} ${ALTO}`} width={ANCHO} height={ALTO} aria-hidden="true" focusable="false">
+          <defs>
+            <pattern id="rollo-rayado" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="6" class="rayado" />
+            </pattern>
+          </defs>
+          <line class="eje" x1={EJE} y1={Y(TOTAL + SIGUIENTE) - 14} x2={EJE} y2={BY + 12} />
+          <g class="rollo" data-i={KB}>
+            <path class="corte" d={base} />
+            <path class="relleno" d={base} />
+          </g>
+          {rollos.map((c) => (
+            <g class="rollo" data-i={c.k}>
+              <path class="corte" d={c.d} />
+              <path class="relleno" d={c.d} />
+              <line class="union" x1={c.union.x1} y1={c.union.y} x2={c.union.x2} y2={c.union.y} />
+            </g>
+          ))}
+          <path class="contorno" d={contorno} />
+          <g class="rollo siguiente" data-i="0">
+            <path class="relleno" d={sig.corte} />
+            <path class="punteado" d={sig.corte} />
+            <path class="punteado" d={sig.exterior} />
+          </g>
+          {guias.map((d, k) => <path class="guia" data-i={k} d={d} />)}
+        </svg>
+        <ol class="rotulos" aria-label={v.list}>
+          {rotulos.map((x, k) => (
+            <li style={`top: ${ranura(k) - 22}px`}>
+              <button type="button" class:list={['rotulo', { siguiente: k === 0 }]} data-i={k} aria-pressed={k === 1 ? 'true' : 'false'} aria-controls="vasija-panel">
+                <span class="linea1"><b>{x.nombre}</b> <span class="rol">{x.rol}</span></span>
+                <span class="dato mono">{x.dato}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+        <button
+          type="button" class="boton-base" data-i={KB} aria-pressed="false" aria-controls="vasija-panel"
+          aria-label={v.base.label} data-mensaje={content[lang].rewards.base}
+          style={`left: ${golpe.left}px; top: ${golpe.top}px; width: ${golpe.width}px; height: ${golpe.height}px`}
+        ></button>
+      </div>
+      <div class="panel" id="vasija-panel" aria-live="polite"></div>
+    </div>
+    <figcaption id="vasija-pie"><b>{v.caption}</b> {v.text}</figcaption>
+    <div class="fuente" hidden data-panel="0">
+      <span class="mono chico">{v.next.when}</span>
+      <h3>{v.next.title}</h3>
+      <p class="rol">{v.next.role}</p>
+      <p>{v.next.text}</p>
+      <a class="btn" href="#contacto">{v.next.cta}</a>
+    </div>
+    <div class="fuente" hidden data-panel={KB}>
+      <span class="mono chico">{v.base.when}</span>
+      <h3>{v.base.school}</h3>
+      <p class="rol">{v.base.degree}</p>
+    </div>
+    {lista.map((j, i) => (
+      <div class="fuente" hidden data-panel={i + 1}>
+        <span class="mono chico">{cuando(j)}, {j.duration}</span>
+        <h3>{j.company}</h3>
+        <p class="rol">{j.role[lang]}{j.place && `, ${j.place}`}</p>
+        <ul class="filas">{j.highlights[lang].map((x) => <li>{x}</li>)}</ul>
+        {j.stack && <p class="chico pila">{v.stack}: {j.stack}</p>}
+      </div>
+    ))}
+  </figure>
+</div>
+
+<script>
+  import { sube, sale, trazaLinea, unaVez, descubre, T } from '../scripts/movimiento';
+
+  // Catálogo: abrir sube el detalle; cerrar lo deja salir antes de plegarlo.
+  for (const d of document.querySelectorAll<HTMLDetailsElement>('.catalogo details')) {
+    const detalle = d.querySelector('.detalle')!;
+    d.querySelector('summary')!.addEventListener('click', (e) => {
+      if (!d.open) return;
+      e.preventDefault();
+      sale(detalle).then(() => { d.open = false; });
+    });
+    d.addEventListener('toggle', () => { if (d.open) sube(detalle); });
+  }
+
+  // Vasija: elegir un rollo muestra su puesto en el panel.
+  const figura = document.querySelector<HTMLElement>('.vasija');
+  if (figura) {
+    const panel = figura.querySelector<HTMLElement>('.panel')!;
+    const botones = [...figura.querySelectorAll<HTMLButtonElement>('.rotulo, .boton-base')];
+    const boton = figura.querySelector<HTMLButtonElement>('.boton-base');
+    const marcables = [...figura.querySelectorAll<SVGElement>('[data-i]')];
+    const mensaje = figura.dataset.mensaje ?? '';
+    let turno = 0;
+    const elige = async (k: number, anima = true) => {
+      const mio = ++turno;
+      botones.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.i) === k)));
+      marcables.forEach((m) => m.classList.toggle('sel', Number(m.dataset.i) === k));
+      const fuente = figura.querySelector<HTMLElement>(`.fuente[data-panel="${k}"]`);
+      if (!fuente) return;
+      if (k === 0) descubre('rollo', mensaje);
+      if (boton && k === Number(boton.dataset.i)) descubre('base', boton.dataset.mensaje ?? '');
+      // El puesto anterior sale (160 ms) antes de que entre el nuevo; un clic más reciente gana.
+      if (anima && panel.children.length) await sale(panel);
+      if (mio !== turno) return;
+      panel.getAnimations().forEach((a) => a.cancel());
+      panel.replaceChildren(...[...fuente.cloneNode(true).childNodes]);
+      if (anima) [...panel.children].forEach((c, i) => sube(c, i * T.escalonado));
+    };
+    botones.forEach((b) => b.addEventListener('click', () => elige(Number(b.dataset.i))));
+    figura.querySelectorAll<SVGGElement>('.rollo[data-i]').forEach((g) => g.addEventListener('click', () => elige(Number(g.dataset.i))));
+    elige(1, false);
+
+    unaVez([figura], () => {
+      figura.classList.add('listo');
+      const rollos = [...figura.querySelectorAll('.rollo')];
+      rollos.forEach((g, i) => sube(g, i * T.escalonado));
+      trazaLinea(figura.querySelector<SVGPathElement>('.contorno')!);
+      figura.querySelectorAll<SVGPathElement>('.guia').forEach((g, i) => trazaLinea(g, T.base + i * T.escalonado));
+      figura.querySelectorAll('.rotulos li').forEach((li, i) => sube(li, T.base + i * T.escalonado));
+      [...panel.children].forEach((c, i) => sube(c, T.base + i * T.escalonado));
+    });
+  }
+</script>
+
+<style>
+  /* ---------- Catálogo (móvil y sin JavaScript) ---------- */
+  .catalogo { border-top: 1px solid var(--filete); }
+  .catalogo > li { border-bottom: 1px solid var(--filete); }
+  details { position: relative; }
+  summary {
+    display: grid;
+    grid-template-columns: 168px minmax(0, 1fr) 240px var(--e-2);
+    gap: var(--e-3);
+    align-items: center;
+    padding: var(--e-3) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: '';
+    position: absolute; left: 0; right: 0; top: 0;
+    height: 1px; background: var(--mundo);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform var(--d-base) var(--curva-exacta);
+  }
+  details[open] > summary::after { transform: scaleX(1); }
+  @media (hover: hover) and (pointer: fine) {
+    summary:hover::after { transform: scaleX(1); }
+    summary:hover .quien b { color: var(--mundo); }
+  }
+  .cuando { color: var(--hueso-2); }
+  .quien b { display: block; font-size: var(--t-h3); line-height: 1.2; font-weight: 600; transition: color var(--d-rapida) var(--curva-exacta); }
+  details[open] .quien b { color: var(--mundo); }
+  .quien span { font-size: var(--t-chico); color: var(--hueso-2); }
+  .dur { display: grid; gap: var(--e-1); color: var(--hueso-2); }
+  .pista { position: relative; height: var(--e-1); }
+  .pista::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--filete-fuerte); }
+  .mide { position: absolute; left: 0; bottom: 0; height: var(--e-1); width: calc(var(--w) * 100%); background: var(--mundo); transform-origin: left; }
+  .mas { position: relative; width: var(--e-2); height: var(--e-2); }
+  .mas::before, .mas::after { content: ''; position: absolute; background: var(--hueso); }
+  .mas::before { left: 0; right: 0; top: calc(50% - 0.5px); height: 1px; }
+  .mas::after { top: 0; bottom: 0; left: calc(50% - 0.5px); width: 1px; transition: transform var(--d-base) var(--curva-exacta); }
+  details[open] .mas::after { transform: scaleY(0); }
+  .detalle { padding: 0 0 var(--e-4) calc(168px + var(--e-3)); max-width: calc(168px + var(--e-3) + 68ch); }
+  .filas li { padding: var(--e-1) 0; border-top: 1px solid var(--filete); }
+  .filas li:first-child { border-top: 0; padding-top: 0; }
+  .pila { margin-top: var(--e-2); }
+  @media (max-width: 760px) {
+    summary { grid-template-columns: minmax(0, 1fr) var(--e-2); grid-template-areas: 'quien mas' 'cuando cuando' 'dur dur'; gap: var(--e-1); }
+    .quien { grid-area: quien; } .cuando { grid-area: cuando; } .dur { grid-area: dur; } .mas { grid-area: mas; }
+    .detalle { padding-left: 0; }
+  }
+
+  /* ---------- Vasija (pantallas anchas con JavaScript) ---------- */
+  .vasija { display: none; }
+  @media (min-width: 1000px) {
+    :global(.js) .catalogo { display: none; }
+    :global(.js) .vasija { display: block; }
+  }
+  :global(.anima) .vasija:not(.listo) { opacity: 0; }
+  .vasija-grid { display: grid; grid-template-columns: 800px minmax(0, 1fr); gap: var(--e-6); align-items: start; }
+  @media (max-width: 1239px) { .vasija-grid { grid-template-columns: 800px; } }
+  .dibujo { position: relative; width: 800px; }
+  .dibujo svg { position: absolute; left: 0; top: 0; overflow: visible; }
+  .rayado { stroke: var(--mundo); stroke-width: 1; }
+  .eje { stroke: var(--hueso-2); stroke-width: 1; stroke-dasharray: 12 4 2 4; }
+  .rollo { cursor: pointer; }
+  .rollo:not([data-i]) { cursor: default; }
+  .corte { fill: url(#rollo-rayado); stroke: var(--mundo); stroke-width: 1; }
+  .relleno { fill: var(--mundo); opacity: 0; transition: opacity var(--d-base) var(--curva-exacta); }
+  .sel .relleno { opacity: 1; }
+  .union { stroke: var(--mundo); stroke-width: 1; opacity: 0.5; }
+  .contorno { fill: none; stroke: var(--mundo); stroke-width: 1.5; stroke-linejoin: round; }
+  .punteado { fill: none; stroke: var(--mundo); stroke-width: 1; stroke-dasharray: 3 3; }
+  .guia { fill: none; stroke: var(--filete-fuerte); stroke-width: 1; transition: stroke var(--d-rapida) var(--curva-exacta); }
+  .guia.sel { stroke: var(--mundo); }
+  .rotulos { position: absolute; left: 420px; top: 0; width: 380px; }
+  .rotulos li { position: absolute; left: 0; width: 100%; }
+  .rotulo {
+    display: grid; width: 100%; min-height: 44px; padding: 0 var(--e-1);
+    text-align: left; background: none; border: 2px solid transparent; cursor: pointer;
+  }
+  .rotulo:focus-visible { outline: none; border-color: var(--mundo); }
+  .linea1 { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .linea1 b { font-size: var(--t-cuerpo); font-weight: 600; color: var(--hueso); transition: color var(--d-rapida) var(--curva-exacta); }
+  .rol { font-size: var(--t-chico); color: var(--hueso-2); }
+  .dato { color: var(--hueso-2); white-space: pre; }
+  .rotulo[aria-pressed='true'] b, .rotulo.siguiente b { color: var(--mundo); }
+  .rotulo[aria-pressed='true'] { border-left-color: var(--mundo); }
+  @media (hover: hover) and (pointer: fine) { .rotulo:hover b { color: var(--mundo); } }
+  /* Base: botón sin rótulo sobre la losa. No se ve hasta que lo enfoca el teclado o se presiona. */
+  .boton-base { position: absolute; background: none; border: 2px solid transparent; cursor: pointer; }
+  .boton-base:focus-visible { outline: none; border-color: var(--mundo); }
+  .panel { border-left: 1px solid var(--mundo); padding-left: var(--e-3); min-height: 200px; }
+  @media (max-width: 1239px) { .panel { margin-top: var(--e-4); } }
+  .panel :global(h3) { font-size: var(--t-h2); line-height: 1.1; margin: var(--e-1) 0 var(--e-1); }
+  .panel :global(.rol) { margin-bottom: var(--e-2); font-size: var(--t-cuerpo); color: var(--hueso-2); }
+  .panel :global(.filas li) { padding: var(--e-1) 0; border-top: 1px solid var(--filete); }
+  .panel :global(.filas li:first-child) { border-top: 0; padding-top: 0; }
+  .panel :global(.btn) { margin-top: var(--e-3); }
+  .vasija figcaption { margin-top: var(--e-4); max-width: 68ch; }
+</style>

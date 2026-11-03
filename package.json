@@ -12,8 +12,8 @@
     "cv": "npm --prefix cv install && npm --prefix cv run build"
   },
   "dependencies": {
-    "@fontsource/barlow": "^5.3.0",
-    "@fontsource/barlow-condensed": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
     "astro": "^5.18.2"
   }
 }

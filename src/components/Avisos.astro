@@ -1,0 +1,53 @@
+---
+// Aviso de recompensas ocultas (MASTER.md §9). Cuenta cada descubrimiento una sola vez.
+import { content, type Lang } from '../data/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const r = content[lang].rewards;
+const TOTAL = 4;
+const contadores = Array.from({ length: TOTAL }, (_, i) => r.count(i + 1, TOTAL));
+---
+<div class="aviso mundo-creador" role="status" aria-live="polite" data-contadores={JSON.stringify(contadores)} hidden>
+  <span class="aviso-n"></span>
+  <span class="aviso-t"></span>
+</div>
+
+<script>
+  import { sube, sale, T } from '../scripts/movimiento';
+
+  const aviso = document.querySelector<HTMLElement>('.aviso');
+  if (aviso) {
+    const contadores: string[] = JSON.parse(aviso.dataset.contadores ?? '[]');
+    const vistos = new Set<string>();
+    let espera: number | undefined;
+    document.addEventListener('descubrimiento', (e) => {
+      const { id, texto } = (e as CustomEvent<{ id: string; texto: string }>).detail;
+      if (vistos.has(id)) return;
+      vistos.add(id);
+      aviso.querySelector('.aviso-n')!.textContent = contadores[vistos.size - 1] ?? '';
+      aviso.querySelector('.aviso-t')!.textContent = texto;
+      aviso.hidden = false;
+      sube(aviso);
+      window.clearTimeout(espera);
+      espera = window.setTimeout(() => { sale(aviso).then(() => { aviso.hidden = true; }); }, T.aviso);
+    });
+  }
+</script>
+
+<style>
+  .aviso {
+    position: fixed;
+    left: var(--margen);
+    bottom: var(--e-4);
+    z-index: var(--z-aviso);
+    display: grid;
+    gap: 2px;
+    max-width: min(360px, calc(100vw - 2 * var(--margen)));
+    padding: var(--e-2) var(--e-3);
+    background: var(--horno);
+    border: 1px solid var(--mundo);
+  }
+  .aviso[hidden] { display: none; }
+  .aviso-n { color: var(--mundo); font-size: var(--t-chico); font-weight: 600; }
+</style>

@@ -1,0 +1,61 @@
+/* Tokens del sistema de diseño. Fuente: MASTER.md (raíz del proyecto). No agregues valores sueltos en
+   los componentes: si falta uno, se agrega aquí y en MASTER.md. */
+:root {
+  /* Color. Contraste sobre --horno: hueso 16.07, hueso-2 7.35, cobalto 4.86, oxido 5.00, filete-fuerte 3.70. */
+  --horno: #0A0A0C;          /* fondo de página, negro de horno (nunca #000) */
+  --placa: #111115;          /* un escalón de superficie */
+  --filete: #2A2A31;         /* filetes decorativos; nunca lleva información */
+  --filete-fuerte: #6A6A74;  /* bordes de campos y estados deshabilitados */
+  --hueso: #EDE7DC;          /* texto principal, marcos de figura */
+  --hueso-2: #A39D93;        /* texto secundario, pies de figura */
+  --cobalto: #4673FF;        /* mundo del ingeniero */
+  --oxido: #E04E32;          /* mundo del creador */
+  --sobre-acento: #0A0A0C;   /* texto sobre relleno cobalto (4.86) u óxido (5.00) */
+  --error: #FF9A8A;
+  --ok: #8BD3A5;
+  --mundo: var(--cobalto);   /* cada sección lo redefine */
+
+  /* Tipografía */
+  --sans: "IBM Plex Sans", "Segoe UI", Roboto, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", Consolas, ui-monospace, monospace;
+  --t-display: clamp(48px, 8vw, 72px);
+  --t-h2: clamp(32px, 5vw, 40px);
+  --t-h3: 24px;
+  --t-cuerpo: 17px;
+  --t-chico: 14px;
+
+  /* Espacio: retícula de 8 px */
+  --e-1: 8px;
+  --e-2: 16px;
+  --e-3: 24px;
+  --e-4: 32px;
+  --e-6: 48px;
+  --e-8: 64px;
+  --e-12: 96px;
+  --e-16: 128px;
+  --ancho: 1200px;
+  --margen: 32px;
+
+  /* Movimiento */
+  --d-rapida: 120ms;
+  --d-base: 200ms;
+  --d-salida: 160ms;
+  --d-coccion: 400ms;
+  --d-trazo: 900ms;
+  --escalonado: 40ms;
+  --reparto-trazo: 600ms;
+  --d-aviso: 3200ms;         /* lo que el aviso de descubrimiento se queda en pantalla */
+  --curva-exacta: cubic-bezier(0.2, 0, 0, 1);
+  --curva-trazo: cubic-bezier(0.45, 0, 0.55, 1);
+
+  /* Capas */
+  --z-encabezado: 10;
+  --z-aviso: 20;
+  --z-saltar: 30;
+
+  color-scheme: dark;
+}
+
+@media (max-width: 640px) {
+  :root { --margen: 24px; }
+}

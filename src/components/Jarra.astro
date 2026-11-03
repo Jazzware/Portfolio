@@ -1,0 +1,81 @@
+---
+// Fig. 1: jarra torneada con la convención arqueológica (media en corte, media por fuera) y escala de 5 cm.
+// Recompensa oculta 1 (MASTER.md §9): tres activaciones cuecen la jarra; el corte pasa de rayado a sólido.
+import { content, type Lang } from '../data/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = content[lang];
+const f = t.hero.figure;
+const corte = 'M 122 60 C 132 72 138 84 138 96 C 138 120 82 138 70 172 C 58 206 56 236 62 262 C 72 306 100 358 138 392 L 138 404 L 200 404 L 200 394 L 150 394 C 110 356 82 304 72 262 C 66 236 68 206 79 174 C 92 140 147 122 147 96 C 147 84 141 72 131 60 Z';
+const tramos = [0, 1, 2, 3, 4];
+---
+<figure class="jarra mundo-creador">
+  <button class="jarra-btn" type="button" aria-label={f.label} data-mensaje={t.rewards.jar}>
+    <svg data-traza viewBox="40 30 320 440" aria-hidden="true" focusable="false">
+      <defs>
+        <pattern id="jarra-rayado" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="6" class="rayado" />
+        </pattern>
+        <clipPath id="jarra-corte"><path d={corte} /></clipPath>
+      </defs>
+      <line class="eje despues" x1="200" y1="40" x2="200" y2="420" />
+      <rect class="despues" x="50" y="55" width="160" height="355" fill="url(#jarra-rayado)" clip-path="url(#jarra-corte)" />
+      <g clip-path="url(#jarra-corte)"><rect class="coccion" x="50" y="55" width="160" height="355" /></g>
+      <path class="trazo linea" d="M 122 60 L 278 60" />
+      <path class="trazo linea" d="M 278 60 C 268 72 262 84 262 96 C 262 120 318 138 330 172 C 342 206 344 236 338 262 C 328 306 300 358 262 392 L 262 404 L 200 404" />
+      <path class="trazo linea" d={corte} />
+      <path class="trazo linea" d="M 200 96 L 262 96 M 200 172 L 330 172 M 147 96 L 200 96" />
+      <path class="trazo tenue" d="M 200 290 L 333 290 M 200 312 L 324 312 M 200 334 L 313 334 M 200 356 L 299 356" />
+      <g class="despues escala">
+        {tramos.map((i) => <rect x={122 + i * 31.2} y="440" width="31.2" height="6" class={i % 2 ? 'hueco' : 'lleno'} />)}
+        <text x="122" y="464">0</text>
+        <text x="278" y="464" text-anchor="end">5 cm</text>
+      </g>
+    </svg>
+  </button>
+  <figcaption><b>{f.caption}</b> {f.text}</figcaption>
+</figure>
+
+<script>
+  import { T, anima, reducido, descubre } from '../scripts/movimiento';
+
+  const boton = document.querySelector<HTMLButtonElement>('.jarra-btn');
+  const coccion = boton?.querySelector<SVGRectElement>('.coccion');
+  if (boton && coccion) {
+    let toques = 0;
+    let cocida = false;
+    boton.addEventListener('click', () => {
+      if (cocida || ++toques < 3) return;
+      cocida = true;
+      boton.classList.add('cocida');
+      if (anima() && !reducido()) {
+        coccion.animate([{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], { duration: T.coccion, easing: T.exacta });
+      }
+      descubre('jarra', boton.dataset.mensaje ?? '');
+    });
+  }
+</script>
+
+<style>
+  .jarra { width: 100%; max-width: 400px; justify-self: end; }
+  .jarra-btn {
+    display: block;
+    width: 100%;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  svg { width: 100%; height: auto; overflow: visible; }
+  .linea { stroke: var(--oxido); stroke-width: 1.5; }
+  .tenue { stroke: var(--oxido); stroke-width: 1; opacity: 0.45; }
+  .rayado { stroke: var(--oxido); stroke-width: 1; }
+  .eje { stroke: var(--hueso-2); stroke-width: 1; stroke-dasharray: 12 4 2 4; }
+  .coccion { fill: var(--oxido); transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(0); }
+  .cocida .coccion { transform: scaleY(1); }
+  .escala .lleno { fill: var(--hueso); }
+  .escala .hueco { fill: none; stroke: var(--hueso); stroke-width: 1; }
+  .escala text { fill: var(--hueso-2); font: var(--t-chico) var(--mono); }
+  @media (max-width: 900px) { .jarra { justify-self: start; max-width: 320px; } }
+</style>
