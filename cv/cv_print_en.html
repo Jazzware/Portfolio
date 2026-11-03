@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Iván López Villegas — CV</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root{
+    --paper:#faf9f5;
+    --ink:#191d23;
+    --ink-soft:#3f4952;
+    --ink-faint:#7c848b;
+    --accent:#1f6f78;
+    --accent-ink:#0f4048;
+    --line:#dcdfd9;
+    --line-strong:#c3c9c2;
+    --plate-bg:#14181c;
+    --plate-fg:#f4f1ea;
+    --plate-fg-soft:#c3beb2;
+    --plate-accent:#6cd6db;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0; padding:0; background:var(--paper);}
+  body{
+    color:var(--ink);
+    font-family:'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+    font-size:9.1pt;
+    line-height:1.29;
+  }
+
+  @page{ size: letter; margin: 0; }
+
+  .plate{
+    background:var(--plate-bg);
+    color:var(--plate-fg);
+    padding:16px 46px 12px;
+  }
+  .plate .name{
+    font-family:'Source Serif 4', Georgia, serif;
+    font-weight:700;
+    font-size:22pt;
+    letter-spacing:-.01em;
+    line-height:1;
+    margin:0 0 7px;
+    color:var(--plate-fg);
+  }
+  .plate .role{
+    font-family:'IBM Plex Mono', ui-monospace, monospace;
+    font-size:8pt;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--plate-bg);
+    background:var(--plate-accent);
+    display:inline-block;
+    padding:2px 7px;
+    border-radius:2px;
+    font-weight:500;
+    margin-bottom:9px;
+  }
+  .plate .contact{
+    font-size:8.2pt;
+    color:var(--plate-fg-soft);
+  }
+  .plate .contact span{opacity:.5; margin:0 3px;}
+
+  .body-pad{ padding: 8px 46px 10px; }
+
+  .label{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin:6px 0 4px;
+  }
+  section:first-of-type .label{ margin-top:0; }
+  .label::before{
+    content:"";
+    width:5px; height:5px;
+    background:var(--accent);
+    flex:none;
+  }
+  .label span{
+    font-family:'IBM Plex Mono', ui-monospace, monospace;
+    font-size:7.6pt;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink);
+    font-weight:500;
+  }
+  .label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line-strong);
+  }
+
+  .summary p{ margin:0; color:var(--ink-soft); }
+
+  .job{ margin-bottom:5px; page-break-inside:avoid; }
+  .job-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:12px;
+    margin-bottom:0;
+  }
+  .job-title{ font-size:10pt; font-weight:600; color:var(--ink); }
+  .job-dates{
+    font-family:'IBM Plex Mono', ui-monospace, monospace;
+    font-size:7.6pt;
+    color:var(--ink-faint);
+    white-space:nowrap;
+  }
+  .job-company{ font-size:8.7pt; color:var(--accent-ink); margin-bottom:3px; font-style:italic; }
+  .job ul{ margin:0; padding-left:13px; }
+  .job li{ color:var(--ink-soft); margin-bottom:1px; }
+  .job li::marker{ color:var(--accent); font-size:8pt; }
+  .job li:last-child{ margin-bottom:0; }
+  .job .oneline{ color:var(--ink-soft); margin:0; }
+
+  .stack{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:7.3pt; color:var(--ink-faint); margin-top:3px; }
+
+  .inline-list{ margin:0; color:var(--ink-soft); }
+
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:0 26px;
+    margin-top:4px;
+  }
+  .footer-grid .fcol{ grid-column: span 1; }
+  .footer-grid .fcol.wide{ grid-column: span 3; }
+
+  .edu-degree{ font-weight:600; color:var(--ink); margin:0; }
+  .edu-school{ color:var(--ink-soft); margin:1px 0 0; }
+
+  .dev-row{ display:flex; justify-content:space-between; gap:8px; margin-bottom:2px; }
+  .dev-row .t{ font-weight:600; color:var(--ink); }
+  .dev-row .d{ font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:7.3pt; color:var(--ink-faint); white-space:nowrap; }
+
+  .lang-line{ color:var(--ink-soft); margin:0; }
+</style>
+</head>
+<body>
+
+<div class="plate">
+  <p class="name">Iván López Villegas</p>
+  <span class="role">Software Engineer III</span>
+  <p class="contact">CDMX, Mexico<span>·</span>ivlovi@outlook.com<span>·</span>linkedin.com/in/ivan-lopezv/<span>·</span>github.com/Jazzware</p>
+</div>
+
+<div class="body-pad">
+
+  <section class="summary">
+    <div class="label"><span>Professional Summary</span></div>
+    <p>Software Engineer with <strong>8+ years</strong> of experience in full-stack development, database architecture, and CI/CD automation. De facto technical go-to: informal team mentor, production-outage escalation point, and Scrum Master, alongside developer duties, for a newly established team, collaborating with teams across four countries — Mexico, India, the US, and China.</p>
+  </section>
+
+  <section>
+    <div class="label"><span>Work Experience</span></div>
+
+    <div class="job">
+      <div class="job-row"><span class="job-title">Software Engineer II</span><span class="job-dates">FEB 2022 — SEP 2026</span></div>
+      <div class="job-company">Solera · Mexico City</div>
+      <ul>
+        <li>Drove index synchronization end-to-end across ~120 databases and ~3,200 CRM customers — owning planning, scope, and most of the implementation — while directing my team on select tickets (defining requirements and test criteria) and resolving issues to deliver on schedule.</li>
+        <li>Informal technical mentor for the team and go-to source of knowledge on system modules and components, resolving workflow questions and diagnosing outages — from a generic error to root cause.</li>
+        <li>First software engineer hired in Mexico for the CRM team (originally based in India); after rotating through Mobile Development (US), founded the local team and defined its processes — working agreements and agile ceremonies, combining the developer and Scrum Master roles (formally trained).</li>
+        <li>Collaborated on SQL Server migrations and VM configuration, modernizing legacy services onto current stacks.</li>
+        <li>Orchestrated a ticket-to-PR workflow with minimal human intervention: GitHub Copilot (Agent mode) for code and test coverage, GitHub Actions for pre-merge validation — from autocompleting to orchestrating AI in the pipeline.</li>
+      </ul>
+      <div class="stack">Stack: C# .NET, SQL Server, ELK, React JS, Angular JS, TypeScript, Docker, Jenkins, TeamCity, Octopus, GitHub, Bitbucket, GitHub Actions, Jira.</div>
+    </div>
+
+    <div class="job">
+      <div class="job-row"><span class="job-title">Jr. Software Developer</span><span class="job-dates">DEC 2020 — FEB 2022</span></div>
+      <div class="job-company">GoNet · Mexico City</div>
+      <ul>
+        <li>Identified the need and led end-to-end an employee ID badge process compliant with new Mexican labor regulations: vendor sourcing, workflow design, and ERP integration — from $29 to $13 MXN per badge (~55% savings).</li>
+        <li>Designed and built, in collaboration with my team, an ERP from scratch in ASP.NET 5 (EF Core + PostgreSQL) that replaced the legacy system, applying architectural patterns for maintainability and scalability.</li>
+        <li>Automated the pre-payroll process with Excel VBA and regular expressions, achieving 99% data cleanliness.</li>
+        <li>Replaced a manual report-generation process with a C# automation that produces the final Excel files directly, eliminating repetitive work.</li>
+      </ul>
+      <div class="stack">Stack: C# .NET, LINQ, Blazor, PostgreSQL, VBA.</div>
+    </div>
+
+    <div class="job">
+      <div class="job-row"><span class="job-title">Jr. Software Developer</span><span class="job-dates">DEC 2018 — DEC 2019</span></div>
+      <div class="job-company">MW Software · Mexico City</div>
+      <ul>
+        <li>Migrated WINSIAF from Visual FoxPro to a web-based PHP environment, eliminating dependency on unsupported legacy technology and reducing operational risk for the business.</li>
+        <li>Rebuilt the client's homepage using Bootstrap 4 and Django.</li>
+      </ul>
+      <div class="stack">Stack: PHP, Python, Django, JavaScript, SQL Server.</div>
+    </div>
+
+    <div class="job">
+      <div class="job-row"><span class="job-title">Web Developer — Internship</span><span class="job-dates">AUG 2018 — DEC 2018</span></div>
+      <div class="job-company">LATBC Design · Mexico City</div>
+      <p class="oneline">Contributed end-to-end to Surfncasas — architecture, development in Laravel 5.8, and production deployment — with version control in BitBucket.</p>
+      <div class="stack">Stack: PHP, Laravel, Bitbucket, MySQL.</div>
+    </div>
+    <div class="job">
+<p class="oneline"><strong>Earlier experience (2016–2020):</strong> Apeyron Informática, Jr. Software Developer (Android, PHP) · Buró de Crédito, Junior Database Administrator (Bash, Informix).</p>
+</div>
+  </section>
+
+  <div class="footer-grid">
+    <div class="fcol wide">
+      <div class="label"><span>Stack</span></div>
+      <p class="inline-list">C# .NET, LINQ, SQL Server, PostgreSQL, TypeScript, React, Angular, Docker, CI/CD, ELK, PHP, Python, Claude, ChatGPT, Gemini.</p>
+    </div>
+    <div class="fcol wide">
+      <div class="label"><span>Leadership</span></div>
+      <p class="inline-list">Technical Mentorship · Scrum Master · Agile Process Design · Cross-border Collaboration · Production Incident Resolution.</p>
+    </div>
+
+    <div class="fcol">
+      <div class="label"><span>Education</span></div>
+      <p class="edu-degree">Bachelor's in Computer Systems Engineering</p>
+      <p class="edu-school">Universidad del Valle de México</p>
+    </div>
+
+    <div class="fcol">
+      <div class="label"><span>Professional Development</span></div>
+      <div class="dev-row"><span class="t">Scrum Master Training</span><span class="d">2023</span></div>
+      <div class="dev-row"><span class="t">Git &amp; GitHub</span><span class="d">2021</span></div>
+      <div class="dev-row"><span class="t">CCNA Certification</span><span class="d">2018</span></div>
+    </div>
+
+    <div class="fcol">
+      <div class="label"><span>Languages</span></div>
+      <p class="lang-line">Spanish — Native<br>English — C1<br>French — A1</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
