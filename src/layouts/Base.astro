@@ -23,12 +23,20 @@ const canonical = new URL(lang === 'es' ? '/' : '/en/', site.url);
     <meta property="og:description" content={t.meta.description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
-    <meta name="theme-color" content="#0b1020" />
+    <meta name="theme-color" content="#0A0A0C" />
     <meta name="color-scheme" content="dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline>
+      // .anima esconde lo que va a entrar con movimiento. Si el script de movimiento no llega a tiempo,
+      // se retira sola y todo queda visible y quieto.
+      (function (r) {
+        r.classList.add('js', 'anima');
+        setTimeout(function () { if (!r.dataset.movimiento) r.classList.remove('anima'); }, 2500);
+      })(document.documentElement);
+    </script>
   </head>
   <body>
     <slot />
+    <script>import '../scripts/movimiento';</script>
   </body>
 </html>

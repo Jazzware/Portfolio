@@ -1,296 +1,333 @@
 ---
+// Página única del portafolio. Estructura: MASTER.md §8. Cada sección declara su mundo:
+// cobalto (ingeniero) u óxido (creador). Los textos vienen de data/content.ts.
 import { content, type Lang } from '../data/content';
 import { site } from '../config';
-import Linea from './Linea.astro';
-import Experiencia from './Experiencia.astro';
+import Jarra from './Jarra.astro';
+import FiguraPaleo from './FiguraPaleo.astro';
+import Vasija from './Vasija.astro';
 import ContactForm from './ContactForm.astro';
+import Excavacion from './Excavacion.astro';
+import Avisos from './Avisos.astro';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = content[lang];
 const cv = site.cv[lang];
-const initials = site.name.split(' ').slice(0, 2).map((w) => w[0]).join('');
-const languages = [
+const idiomas = [
   { code: 'es', label: 'ES', name: 'Español', href: '/' },
   { code: 'en', label: 'EN', name: 'English', href: '/en/' },
 ];
-const sections = [
-  { href: '#paleosharp', label: t.nav.project },
-  { href: '#experiencia', label: t.nav.experience },
-  { href: '#herramientas', label: t.nav.skills },
-  { href: '#contacto', label: t.nav.contact },
+const secciones = [
+  { id: 'paleosharp', label: t.nav.project },
+  { id: 'experiencia', label: t.nav.experience },
+  { id: 'herramientas', label: t.nav.skills },
+  { id: 'contacto', label: t.nav.contact },
 ];
-const contactLinks = [
+const enlaces = [
   site.email && { label: t.contact.email, href: `mailto:${site.email}`, text: site.email },
   site.linkedin && { label: t.contact.linkedin, href: site.linkedin, text: site.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') },
   site.github && { label: t.contact.github, href: site.github, text: site.github.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') },
   cv && { label: t.contact.cv, href: cv, text: t.hero.cv },
 ].filter(Boolean) as { label: string; href: string; text: string }[];
-const stackLabel = lang === 'es' ? 'Tecnologías' : 'Technologies';
+const pilaLabel = t.experience.vessel.stack;
 ---
-<a class="skip-link" href="#main">{t.nav.skip}</a>
+<a class="saltar" href="#main">{t.nav.skip}</a>
 
-<header class="top">
-  <div class="wrap bar">
-    <a class="brand" href={lang === 'es' ? '/' : '/en/'}>
-      <span class="tile" aria-hidden="true">{initials}</span>
-      <span>{site.name}</span>
-    </a>
-    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
-      {t.nav.menu}
-    </button>
+<header class="encabezado">
+  <div class="wrap barra">
+    <a class="marca" href={lang === 'es' ? '/' : '/en/'}>{site.name}</a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">{t.nav.menu}</button>
     <div class="menu" id="menu">
       <nav aria-label={t.nav.sections}>
-        <ul>{sections.map((s) => <li><a href={s.href}>{s.label}</a></li>)}</ul>
+        <ul>
+          {secciones.map((s, i) => (
+            <li><a href={`#${s.id}`}><span class="tecla" aria-hidden="true">{i + 1}</span>{s.label}</a></li>
+          ))}
+        </ul>
       </nav>
-      <div class="langs">
-        {languages.map((l) => l.code === lang
-          ? <span class="lang current" aria-hidden="true">{l.label}</span>
-          : <a class="lang" href={l.href} hreflang={l.code} lang={l.code} aria-label={l.name}>{l.label}</a>)}
+      <button class="atajos-btn" type="button" popovertarget="atajos" aria-label={t.shortcuts.button}>?</button>
+      <div class="idiomas">
+        {idiomas.map((l) => l.code === lang
+          ? <span class="idioma actual" aria-hidden="true">{l.label}</span>
+          : <a class="idioma" href={l.href} hreflang={l.code} lang={l.code} aria-label={l.name}>{l.label}</a>)}
       </div>
     </div>
   </div>
 </header>
 
+<div id="atajos" class="atajos" popover>
+  <p class="atajos-titulo">{t.shortcuts.title}</p>
+  <dl>
+    {t.shortcuts.items.map(([k, label]) => <div><dt><kbd>{k}</kbd></dt><dd>{label}</dd></div>)}
+  </dl>
+  <button class="cerrar" type="button" popovertarget="atajos" popovertargetaction="hide">{t.shortcuts.close}</button>
+</div>
+
 <main id="main">
-  <section class="hero" aria-labelledby="hero-title">
-    <!-- El resto de la red, apagada: solo tu línea está encendida. -->
-    <svg class="network" viewBox="0 0 1440 760" preserveAspectRatio="xMaxYMin slice" aria-hidden="true" focusable="false">
-      <g fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M1480 90H1120L980 230V420" />
-        <path d="M760 -20V60L900 200H1480" />
-        <path d="M1480 330H1240L1130 440H880" />
-        <path d="M1300 -20V160L1380 240V560" />
-      </g>
-      <g fill="#0b1020" stroke="currentColor" stroke-width="5">
-        <circle cx="1120" cy="90" r="10" /><circle cx="980" cy="230" r="10" /><circle cx="980" cy="420" r="10" />
-        <circle cx="900" cy="200" r="10" /><circle cx="1240" cy="330" r="10" /><circle cx="1130" cy="440" r="10" />
-        <circle cx="1300" cy="160" r="10" /><circle cx="1380" cy="560" r="10" /><circle cx="1220" cy="200" r="10" />
-      </g>
-    </svg>
-    <div class="wrap">
-      <h1 id="hero-title">{site.name}</h1>
-      <p class="role">{t.hero.role}</p>
-      <div class="intro">
-        <p class="lede">{t.hero.lede}</p>
-        <div class="actions">
-          <a class="btn btn-primary" href="#contacto">{t.hero.contact}</a>
-          <a class="btn btn-secondary" href={site.paleosharp.play}>{t.hero.play}</a>
-          {cv && <a class="btn btn-secondary" href={cv} download>{t.hero.cv}</a>}
+  <section class="portada mundo-ingeniero" aria-labelledby="portada-titulo">
+    <div class="wrap portada-grid">
+      <div class="portada-texto">
+        <h1 id="portada-titulo" data-revela>{site.name}</h1>
+        <p class="rol" data-revela>{t.hero.role}</p>
+        <p class="lede" data-revela>{t.hero.lede}</p>
+        <p class="busca" data-revela>{t.hero.seeking}</p>
+        <p class="aficiones" data-revela>{t.hero.hobbies}</p>
+        <div class="acciones" data-revela>
+          <a class="btn" href="#contacto">{t.hero.contact}</a>
+          <a class="btn mundo-creador" href={site.paleosharp.play}>{t.hero.play}</a>
+          {cv && <a class="btn" href={cv} download>{t.hero.cv}</a>}
         </div>
       </div>
-      <Linea lang={lang} />
+      <Jarra lang={lang} />
     </div>
   </section>
 
-  <section id="paleosharp" class="project" aria-labelledby="paleosharp-title">
-    <div class="wrap project-grid">
-      <div class="project-main">
-        <h2 id="paleosharp-title">{t.project.title}</h2>
-        <p class="summary">{t.project.summary}</p>
-        <p class="scope">{t.project.scope}</p>
-        <div class="actions">
-          <a class="btn btn-primary" href={site.paleosharp.play}>{t.project.play}</a>
-          {site.paleosharp.source && <a class="btn btn-secondary" href={site.paleosharp.source}>{t.project.source}</a>}
+  <section id="paleosharp" class="seccion mundo-creador" aria-labelledby="paleosharp-titulo">
+    <div class="wrap">
+      <div class="cabeza paleo">
+        <div class="paleo-texto">
+          <h2 id="paleosharp-titulo" tabindex="-1" data-revela>{t.project.title}</h2>
+          <p class="resumen" data-revela>{t.project.summary}</p>
+          <p class="chico" data-revela>{t.project.scope}</p>
+          <div class="acciones" data-revela>
+            <a class="btn" href={site.paleosharp.play}>{t.project.play}</a>
+            {site.paleosharp.source && <a class="btn" href={site.paleosharp.source}>{t.project.source}</a>}
+          </div>
+          <p class="chico" data-revela>{t.project.desktop}</p>
         </div>
-        <p class="note">{t.project.desktop}</p>
+        <FiguraPaleo lang={lang} />
       </div>
-      <div class="project-how">
-        <h3>{t.project.howTitle}</h3>
-        <ul class="how">{t.project.how.map((item) => <li>{item}</li>)}</ul>
-        <ul class="chips" aria-label={stackLabel}>{t.project.stack.split(', ').map((s) => <li>{s}</li>)}</ul>
+      <div class="dos-columnas como">
+        <h3 data-revela>{t.project.howTitle}</h3>
+        <div>
+          <ul class="filas">{t.project.how.map((x) => <li data-revela>{x}</li>)}</ul>
+          <p class="chico pila" data-revela>{pilaLabel}: {t.project.stack}</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="experiencia" class="experience" aria-labelledby="experiencia-title">
+  <section id="experiencia" class="seccion mundo-ingeniero" aria-labelledby="experiencia-titulo">
     <div class="wrap">
-      <div class="exp-top">
-        <h2 id="experiencia-title">{t.experience.title}</h2>
-        <div class="practices">
-          <h3>{t.experience.practicesTitle}</h3>
-          <ul>{t.experience.practices.map((item) => <li>{item}</li>)}</ul>
+      <div class="cabeza dos-columnas">
+        <h2 id="experiencia-titulo" tabindex="-1" data-revela>{t.experience.title}</h2>
+        <div>
+          <h3 data-revela>{t.experience.practicesTitle}</h3>
+          <ul class="filas practicas">{t.experience.practices.map((x) => <li data-revela>{x}</li>)}</ul>
         </div>
       </div>
-      <Experiencia lang={lang} />
+      <div class="exp-cuerpo"><Vasija lang={lang} /></div>
     </div>
   </section>
 
-  <section id="herramientas" class="skills" aria-labelledby="herramientas-title">
+  <section id="herramientas" class="seccion mundo-ingeniero" aria-labelledby="herramientas-titulo">
     <div class="wrap">
-      <h2 id="herramientas-title">{t.skills.title}</h2>
-      <div class="skills-grid">
-        <dl class="tools">
+      <div class="cabeza"><h2 id="herramientas-titulo" tabindex="-1" data-revela>{t.skills.title}</h2></div>
+      <div class="herr">
+        <dl class="tabla">
           {t.skills.groups.map((g) => (
-            <div class="row"><dt>{g.name}</dt><dd><ul class="chips">{g.items.map((i) => <li>{i}</li>)}</ul></dd></div>
+            <div class="fila" data-revela><dt>{g.name}</dt><dd><ul class="en-linea">{g.items.map((i) => <li>{i}</li>)}</ul></dd></div>
           ))}
         </dl>
-        <dl class="edu">
+        <dl class="tabla">
           {t.skills.education.map((g) => (
-            <div class="row"><dt>{g.name}</dt><dd><ul>{g.items.map((i) => <li>{i}</li>)}</ul></dd></div>
+            <div class="fila" data-revela><dt>{g.name}</dt><dd><ul>{g.items.map((i) => <li>{i}</li>)}</ul></dd></div>
           ))}
         </dl>
       </div>
     </div>
   </section>
 
-  <section id="contacto" class="contact" aria-labelledby="contacto-title">
-    <div class="wrap contact-grid">
-      <div class="contact-text">
-        <span class="terminal" aria-hidden="true"></span>
-        <h2 id="contacto-title">{t.contact.title}</h2>
-        <p class="contact-lede">{t.contact.text}</p>
-        {contactLinks.length > 0 && (
-          <>
-            <p class="elsewhere">{t.contact.elsewhere}</p>
-            <ul class="contact-links">
-              {contactLinks.map((l) => (
-                <li><span>{l.label}</span><a href={l.href}>{l.text}</a></li>
-              ))}
-            </ul>
-          </>
-        )}
+  <section id="contacto" class="seccion mundo-ingeniero" aria-labelledby="contacto-titulo">
+    <div class="wrap">
+      <div class="cabeza contacto">
+        <div>
+          <h2 id="contacto-titulo" tabindex="-1" data-revela>{t.contact.title}</h2>
+          <p class="lede" data-revela>{t.contact.text}</p>
+          {enlaces.length > 0 && (
+            <>
+              <p class="chico otros" data-revela>{t.contact.elsewhere}</p>
+              <ul class="enlaces">
+                {enlaces.map((l) => <li data-revela><span class="chico">{l.label}</span><a class="enlace" href={l.href}>{l.text}</a></li>)}
+              </ul>
+            </>
+          )}
+        </div>
+        <div data-revela><ContactForm lang={lang} /></div>
       </div>
-      <ContactForm lang={lang} />
     </div>
   </section>
 </main>
 
-<footer class="foot">
-  <div class="wrap foot-inner">
-    <p class="foot-name">{site.name}</p>
-    <p>{t.footer}</p>
+<footer class="pie">
+  <div class="wrap">
+    <Excavacion lang={lang} />
+    <div class="pie-fila">
+      <p class="pie-nombre">{site.name}</p>
+      <p class="chico">{t.footer}</p>
+    </div>
   </div>
 </footer>
 
+<Avisos lang={lang} />
+
 <script>
+  import { reducido } from '../scripts/movimiento';
+
   // Menú en pantallas angostas. Sin JavaScript las secciones siempre se ven.
-  const button = document.querySelector<HTMLButtonElement>('.menu-btn');
+  const boton = document.querySelector<HTMLButtonElement>('.menu-btn');
   const menu = document.getElementById('menu');
-  if (button && menu) {
-    const setOpen = (open: boolean) => {
-      button.setAttribute('aria-expanded', String(open));
-      menu.classList.toggle('open', open);
-    };
-    button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
-    menu.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) setOpen(false); });
+  if (boton && menu) {
+    const abre = (si: boolean) => { boton.setAttribute('aria-expanded', String(si)); menu.classList.toggle('abierto', si); };
+    boton.addEventListener('click', () => abre(boton.getAttribute('aria-expanded') !== 'true'));
+    menu.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) abre(false); });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') { setOpen(false); button.focus(); }
+      if (e.key === 'Escape' && boton.getAttribute('aria-expanded') === 'true') { abre(false); boton.focus(); }
     });
   }
+
+  // Atajos: 1 a 4 saltan entre secciones como un selector de niveles; ? muestra la lista.
+  const atajos = document.getElementById('atajos');
+  const destinos: Record<string, string> = { '1': 'paleosharp', '2': 'experiencia', '3': 'herramientas', '4': 'contacto' };
+  document.addEventListener('keydown', (e) => {
+    if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.target instanceof Element && e.target.closest('input, textarea, select, [contenteditable]')) return;
+    if (e.key === '?' && atajos) { e.preventDefault(); atajos.togglePopover(); return; }
+    const id = destinos[e.key];
+    if (!id) return;
+    const seccion = document.getElementById(id);
+    if (!seccion) return;
+    e.preventDefault();
+    seccion.scrollIntoView({ behavior: reducido() ? 'auto' : 'smooth', block: 'start' });
+    seccion.querySelector<HTMLElement>('h2')?.focus({ preventScroll: true });
+  });
 </script>
 
 <style>
-  /* Encabezado */
-  .top {
-    position: sticky; top: 0; z-index: 10;
-    background: color-mix(in srgb, var(--fondo) 84%, transparent);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--borde);
+  /* ---------- Encabezado: opaco, con filete; sin vidrio ---------- */
+  .encabezado {
+    position: sticky; top: 0; z-index: var(--z-encabezado);
+    background: var(--horno);
+    border-bottom: 1px solid var(--filete);
   }
-  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px 32px; min-height: 72px; }
-  .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--texto); text-decoration: none; font-weight: 600; font-size: 18px; }
-  .tile {
-    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 9px;
-    background: var(--linea); color: var(--fondo);
-    font-family: var(--display); font-weight: 700; font-size: 21px; letter-spacing: 0.02em;
+  .barra { display: flex; align-items: center; justify-content: space-between; gap: var(--e-2) var(--e-4); min-height: 72px; }
+  .marca { color: var(--hueso); text-decoration: none; font-weight: 600; }
+  .menu { display: flex; align-items: center; gap: var(--e-3); }
+  nav ul { display: flex; gap: var(--e-1) var(--e-3); flex-wrap: wrap; }
+  nav a {
+    position: relative; display: inline-flex; align-items: center; gap: var(--e-1);
+    min-height: 44px; color: var(--hueso); text-decoration: none; font-size: var(--t-chico); font-weight: 600;
   }
-  .menu { display: flex; align-items: center; gap: 28px; }
-  nav ul { display: flex; gap: 4px 24px; flex-wrap: wrap; }
-  nav a { display: inline-flex; align-items: center; min-height: 44px; color: var(--texto); text-decoration: none; font-weight: 500; font-size: 17px; }
-  nav a:hover { text-decoration: underline; text-decoration-color: var(--linea); text-decoration-thickness: 3px; text-underline-offset: 0.35em; }
-  .langs { display: flex; border: 1.5px solid var(--borde); border-radius: 8px; overflow: hidden; }
-  .lang { display: grid; place-items: center; min-width: 44px; min-height: 36px; font-family: var(--display); font-weight: 600; font-size: 17px; color: var(--texto); text-decoration: none; }
-  .lang.current { background: var(--texto); color: var(--fondo); }
-  a.lang:hover { background: var(--superficie); }
+  nav a::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: var(--e-1); height: 1px;
+    background: var(--cobalto); transform: scaleX(0); transform-origin: left;
+    transition: transform var(--d-base) var(--curva-exacta);
+  }
+  @media (hover: hover) and (pointer: fine) { nav a:hover::after { transform: scaleX(1); } }
+  .tecla, kbd {
+    display: inline-grid; place-items: center; min-width: var(--e-3); height: var(--e-3); padding: 0 var(--e-1);
+    font: 600 var(--t-chico) / 1 var(--sans); color: var(--hueso-2); border: 1px solid var(--filete-fuerte);
+  }
+  .atajos-btn {
+    display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
+    font: 600 var(--t-chico) / 1 var(--sans); color: var(--hueso-2);
+    background: none; border: 1px solid var(--filete-fuerte); cursor: pointer;
+    transition: color var(--d-rapida) var(--curva-exacta), border-color var(--d-rapida) var(--curva-exacta);
+  }
+  @media (hover: hover) and (pointer: fine) { .atajos-btn:hover { color: var(--hueso); border-color: var(--hueso-2); } }
+  .atajos-btn:active { color: var(--hueso); border-color: var(--hueso); }
+  .idiomas { display: flex; border: 1px solid var(--filete-fuerte); }
+  .idioma { display: grid; place-items: center; min-width: 44px; min-height: 44px; font-size: var(--t-chico); font-weight: 600; color: var(--hueso); text-decoration: none; }
+  .idioma.actual { background: var(--hueso); color: var(--horno); }
+  @media (hover: hover) and (pointer: fine) { a.idioma:hover { background: var(--placa); } }
   .menu-btn {
-    display: none; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px;
-    border: 1.5px solid var(--borde); border-radius: 8px; background: none; color: var(--texto);
-    font: inherit; font-weight: 600; font-size: 16px; cursor: pointer;
+    display: none; min-height: 44px; padding: 0 var(--e-2);
+    background: none; border: 1px solid var(--filete-fuerte); font-size: var(--t-chico); font-weight: 600; cursor: pointer;
   }
-  @media (max-width: 760px) {
-    .bar { flex-wrap: wrap; gap: 12px; padding-block: 12px; }
-    .menu { flex-basis: 100%; flex-direction: column; align-items: flex-start; gap: 12px; padding-bottom: 8px; }
+  @media (max-width: 860px) {
+    .barra { flex-wrap: wrap; padding-block: var(--e-2); }
+    .menu { flex-basis: 100%; flex-direction: column; align-items: flex-start; gap: var(--e-2); padding-bottom: var(--e-1); }
     nav ul { flex-direction: column; gap: 0; }
-    nav a { min-height: 48px; font-size: 19px; }
-    :global(.js) .menu-btn { display: inline-flex; }
-    :global(.js) .menu:not(.open) { display: none; }
+    nav a { min-height: 48px; font-size: var(--t-cuerpo); }
+    .tecla, .atajos-btn { display: none; }
+    :global(.js) .menu-btn { display: inline-flex; align-items: center; }
+    :global(.js) .menu {
+      transition: opacity var(--d-base) var(--curva-exacta), transform var(--d-base) var(--curva-exacta), display var(--d-base) allow-discrete;
+    }
+    :global(.js) .menu:not(.abierto) { display: none; opacity: 0; transform: translateY(4px); transition-duration: var(--d-salida); }
+    @starting-style { :global(.js) .menu.abierto { opacity: 0; transform: translateY(8px); } }
   }
 
-  /* Portada: el nombre es el letrero de la estación; la línea, debajo. */
-  .hero { position: relative; isolation: isolate; padding-top: 80px; }
-  .network {
-    position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%;
-    color: var(--texto); opacity: 0.09; pointer-events: none;
-    -webkit-mask-image: linear-gradient(to right, transparent 30%, #000 75%);
-    mask-image: linear-gradient(to right, transparent 30%, #000 75%);
+  /* ---------- Atajos de teclado (popover nativo) ---------- */
+  .atajos {
+    position: fixed; inset: auto var(--margen) auto auto; top: calc(72px + var(--e-1)); margin: 0;
+    width: 280px; padding: var(--e-3);
+    color: var(--hueso); background: var(--placa); border: 1px solid var(--filete-fuerte);
+    opacity: 1; transform: none;
+    transition: opacity var(--d-base) var(--curva-exacta), transform var(--d-base) var(--curva-exacta),
+      display var(--d-base) allow-discrete, overlay var(--d-base) allow-discrete;
   }
-  @media (max-width: 760px) { .network { opacity: 0.04; } }
-  h1 { font-size: clamp(56px, 10vw, 128px); line-height: 0.92; letter-spacing: -0.01em; }
-  .role { margin-top: 14px; font-family: var(--display); font-weight: 600; font-size: clamp(24px, 2.6vw, 32px); line-height: 1.2; color: var(--texto-2); text-wrap: balance; }
-  .intro { display: grid; grid-template-columns: minmax(0, 64ch) auto; gap: 32px 64px; align-items: end; justify-content: space-between; margin-top: 36px; }
-  .lede { font-size: 20px; line-height: 1.6; }
-  @media (max-width: 1000px) { .intro { grid-template-columns: minmax(0, 1fr); } }
-  @media (max-width: 640px) { .hero { padding-top: 48px; } .lede { font-size: 18px; } }
+  .atajos:not(:popover-open) { opacity: 0; transform: translateY(4px); transition-duration: var(--d-salida); }
+  @starting-style { .atajos:popover-open { opacity: 0; transform: translateY(8px); } }
+  .atajos-titulo { font-weight: 600; margin-bottom: var(--e-2); }
+  .atajos dl div { display: grid; grid-template-columns: 40px 1fr; align-items: center; padding: var(--e-1) 0; border-top: 1px solid var(--filete); font-size: var(--t-chico); }
+  .cerrar { margin-top: var(--e-2); min-height: 44px; padding: 0; background: none; border: 0; color: var(--cobalto); font-size: var(--t-chico); font-weight: 600; cursor: pointer; }
 
-  /* PaleoSharp: otra línea, turquesa, con su estación de correspondencia sobre la banda. */
-  .project { --pad: 32px; position: relative; margin-top: 136px; padding-block: 96px 104px; background: var(--superficie); border-top: 12px solid var(--paleo); }
-  .project::before {
-    content: '';
-    position: absolute; top: -21px; left: max(var(--pad), calc(50% - var(--ancho) / 2 + var(--pad)));
-    width: 30px; height: 30px; border-radius: 50%;
-    background: var(--fondo); border: 6px solid var(--paleo);
-    box-shadow: 0 0 22px color-mix(in srgb, var(--paleo) 45%, transparent);
-  }
-  .project-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 48px 80px; align-items: start; }
-  .project h2 { color: var(--paleo); font-size: clamp(48px, 7vw, 84px); }
-  .summary { margin-top: 24px; font-size: 21px; line-height: 1.55; max-width: 34em; }
-  .scope { margin-top: 16px; color: var(--texto-2); max-width: 36em; }
-  .project .actions { margin-top: 32px; }
-  .note { margin-top: 14px; font-size: 15px; color: var(--texto-2); }
-  .project-how { padding-top: 12px; }
-  .how { margin-top: 18px; display: flex; flex-direction: column; gap: 16px; }
-  .how li { position: relative; padding-left: 26px; }
-  .how li::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 11px; height: 11px; border-radius: 3px; background: var(--paleo); }
-  .project-how .chips { margin-top: 28px; }
-  .project-how .chips li { border-color: color-mix(in srgb, var(--paleo) 40%, var(--borde)); }
-  @media (max-width: 900px) { .project-grid { grid-template-columns: minmax(0, 1fr); } }
-  @media (max-width: 640px) { .project { --pad: 20px; margin-top: 96px; padding-block: 72px; } .summary { font-size: 19px; } }
+  /* ---------- Portada ---------- */
+  .portada { padding-top: var(--e-12); }
+  .portada-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--e-6); align-items: end; }
+  h1 { font-size: var(--t-display); line-height: 1; letter-spacing: -0.025em; }
+  .rol { margin-top: var(--e-3); font-size: var(--t-h3); line-height: 1.2; font-weight: 600; color: var(--mundo); }
+  .lede { margin-top: var(--e-4); max-width: 60ch; }
+  .busca { margin-top: var(--e-2); font-weight: 600; }
+  .aficiones { margin-top: var(--e-2); max-width: 60ch; color: var(--hueso-2); }
+  .portada .acciones { margin-top: var(--e-4); }
+  @media (max-width: 900px) { .portada-grid { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 640px) { .portada { padding-top: var(--e-6); } }
 
-  /* Experiencia */
-  .experience { padding-top: 128px; }
-  .exp-top { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 32px 80px; align-items: start; }
-  .practices ul { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
-  .practices li { position: relative; padding-left: 24px; }
-  .practices li::before { content: ''; position: absolute; left: 0; top: 0.78em; width: 12px; height: 3px; border-radius: 2px; background: var(--linea); }
-  @media (max-width: 900px) { .exp-top { grid-template-columns: minmax(0, 1fr); } }
-  @media (max-width: 640px) { .experience { padding-top: 96px; } }
+  /* ---------- Cabeza de sección: filete en el color del mundo ---------- */
+  .cabeza { border-top: 1px solid var(--mundo); padding-top: var(--e-4); }
+  .dos-columnas { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--e-3) var(--e-6); align-items: start; }
+  .filas li { padding: var(--e-2) 0; border-top: 1px solid var(--filete); max-width: 68ch; }
+  .filas li:first-child { border-top: 0; padding-top: 0; }
+  @media (max-width: 900px) { .dos-columnas { grid-template-columns: minmax(0, 1fr); } }
 
-  /* Herramientas y formación */
-  .skills { padding-top: 64px; }
-  .skills-grid { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 0 80px; }
-  .row { padding: 20px 0 22px; border-top: 1px solid var(--borde); }
-  dt { font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.2; }
-  dd { margin-top: 10px; }
-  .edu dd ul { display: flex; flex-direction: column; gap: 4px; }
-  @media (max-width: 900px) { .skills-grid { grid-template-columns: minmax(0, 1fr); } }
+  /* ---------- PaleoSharp ---------- */
+  .paleo { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--e-6); align-items: start; }
+  .paleo-texto { display: grid; gap: var(--e-2); justify-items: start; }
+  .paleo-texto h2 { margin-bottom: var(--e-1); }
+  .paleo .acciones { margin-block: var(--e-1); }
+  .como { margin-top: var(--e-12); }
+  .como h3 { color: var(--mundo); }
+  .pila { margin-top: var(--e-3); }
+  @media (max-width: 900px) { .paleo { grid-template-columns: minmax(0, 1fr); } .como { margin-top: var(--e-8); } }
 
-  /* Contacto: la estación a la que lleva el tramo punteado del mapa. */
-  .contact { padding-top: 136px; }
-  .contact-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px 80px; align-items: start; }
-  .terminal { display: block; width: 30px; height: 30px; margin-bottom: 20px; border-radius: 50%; border: 4px dashed var(--texto-2); }
-  .contact-lede { margin-top: 20px; font-size: 20px; max-width: 30em; }
-  .elsewhere { margin-top: 40px; color: var(--texto-2); }
-  .contact-links { margin-top: 8px; border-top: 1px solid var(--borde); }
-  .contact-links li { display: grid; grid-template-columns: 7em minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--borde); }
-  .contact-links span { color: var(--texto-2); }
-  .contact-links a { overflow-wrap: anywhere; font-weight: 500; }
-  @media (max-width: 900px) { .contact-grid { grid-template-columns: minmax(0, 1fr); } }
-  @media (max-width: 640px) { .contact { padding-top: 96px; } }
+  /* ---------- Experiencia ---------- */
+  .practicas { margin-top: var(--e-2); }
+  .exp-cuerpo { margin-top: var(--e-12); }
+  @media (max-width: 640px) { .exp-cuerpo { margin-top: var(--e-8); } }
 
-  /* Pie: la línea termina aquí. */
-  .foot { margin-top: 136px; border-top: 12px solid var(--linea); padding-block: 28px 48px; font-size: 15px; color: var(--texto-2); }
-  .foot-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; }
-  .foot-name { font-weight: 600; color: var(--texto); }
+  /* ---------- Herramientas y formación ---------- */
+  .herr { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 0 var(--e-6); margin-top: var(--e-6); }
+  .fila { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 5fr); gap: var(--e-1) var(--e-3); padding: var(--e-2) 0; border-top: 1px solid var(--filete); }
+  dt { font-weight: 600; }
+  .en-linea { display: flex; flex-wrap: wrap; }
+  .en-linea li:not(:last-child)::after { content: ',\00a0'; }
+  @media (max-width: 900px) { .herr { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 640px) { .fila { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ---------- Contacto ---------- */
+  .contacto { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--e-6) var(--e-8); align-items: start; }
+  .contacto .lede { margin-top: var(--e-3); max-width: 44ch; }
+  .otros { margin-top: var(--e-6); }
+  .enlaces { margin-top: var(--e-1); border-top: 1px solid var(--filete); }
+  .enlaces li { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: var(--e-2); align-items: baseline; padding: var(--e-2) 0; border-bottom: 1px solid var(--filete); }
+  .enlaces a { overflow-wrap: anywhere; font-weight: 600; }
+  @media (max-width: 900px) { .contacto { grid-template-columns: minmax(0, 1fr); } }
+
+  /* ---------- Pie ---------- */
+  .pie { margin-top: var(--e-16); padding-bottom: var(--e-6); }
+  .pie-fila { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--e-1) var(--e-4); padding-top: var(--e-3); }
+  .pie-nombre { font-weight: 600; }
 </style>

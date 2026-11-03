@@ -1,0 +1,82 @@
+---
+// Recompensa oculta 3 (MASTER.md §9): una franja de tierra en el pie. Cada activación abre más el pozo;
+// a la quinta aparece el terópodo, trazándose. El esqueleto se genera solo entonces (scripts/esqueleto.ts).
+import { content, type Lang } from '../data/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const r = content[lang].rewards;
+---
+<button type="button" class="tierra mundo-creador" aria-label={r.earth} data-fosil={r.fossil} data-mensaje={r.dig}>
+  <svg viewBox="0 0 1200 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="tierra-a" width="23" height="19" patternUnits="userSpaceOnUse">
+        <circle cx="3" cy="4" r="1" /><circle cx="14" cy="2" r="0.8" /><circle cx="9" cy="12" r="1.1" /><circle cx="19" cy="15" r="0.7" />
+      </pattern>
+      <pattern id="tierra-b" width="37" height="29" patternUnits="userSpaceOnUse">
+        <circle cx="6" cy="20" r="0.9" /><circle cx="27" cy="8" r="1.2" /><circle cx="31" cy="24" r="0.8" /><circle cx="17" cy="27" r="0.6" />
+      </pattern>
+      <mask id="tierra-pozo" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="160">
+        <rect width="1200" height="160" fill="white" />
+        <ellipse class="pozo" cx="600" cy="80" rx="190" ry="78" fill="black" />
+      </mask>
+    </defs>
+    <g class="capa" mask="url(#tierra-pozo)">
+      <rect width="1200" height="160" fill="url(#tierra-a)" />
+      <rect width="1200" height="160" fill="url(#tierra-b)" />
+    </g>
+    <g class="fosil" transform="translate(401 -10) scale(0.5)"></g>
+  </svg>
+</button>
+
+<script>
+  import { T, anima, reducido, traza, descubre } from '../scripts/movimiento';
+  import { construyeEsqueleto } from '../scripts/esqueleto';
+
+  const boton = document.querySelector<HTMLButtonElement>('.tierra');
+  const pozo = boton?.querySelector<SVGEllipseElement>('.pozo');
+  const fosil = boton?.querySelector<SVGGElement>('.fosil');
+  if (boton && pozo && fosil) {
+    const GOLPES = 5;
+    let golpes = 0;
+    const abre = (desde: number, hasta: number) => {
+      pozo.style.transform = `scale(${hasta})`;
+      if (!anima() || reducido()) return;
+      pozo.animate([{ transform: `scale(${desde})` }, { transform: `scale(${hasta})` }], { duration: T.base, easing: T.exacta });
+    };
+    boton.addEventListener('click', () => {
+      if (golpes >= GOLPES) return;
+      golpes++;
+      abre((golpes - 1) / GOLPES, golpes / GOLPES);
+      if (golpes < GOLPES) return;
+      construyeEsqueleto(fosil);
+      traza(boton.querySelector('svg')!);
+      boton.setAttribute('aria-label', boton.dataset.fosil ?? '');
+      boton.classList.add('excavada');
+      descubre('excavacion', boton.dataset.mensaje ?? '');
+    });
+  }
+</script>
+
+<style>
+  .tierra {
+    display: block;
+    width: 100%;
+    height: 160px;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-block: 1px solid var(--filete);
+    cursor: pointer;
+  }
+  .tierra.excavada { cursor: default; }
+  .tierra svg { width: 100%; height: 100%; }
+  pattern circle { fill: var(--filete-fuerte); }
+  .pozo { transform-box: fill-box; transform-origin: center; transform: scale(0); }
+  .fosil :global(.esq-guia) { fill: none; stroke: none; }
+  .fosil :global(.esq-linea) { fill: none; stroke: var(--oxido); stroke-width: 2.2; }
+  .fosil :global(.esq-fina) { fill: none; stroke: var(--oxido); stroke-width: 1.5; }
+  .fosil :global(.esq-lejana) { fill: none; stroke: var(--oxido); stroke-width: 1.5; opacity: 0.45; }
+  .fosil :global(.esq-punto) { fill: var(--oxido); }
+  @media (max-width: 640px) { .tierra { height: 128px; } }
+</style>

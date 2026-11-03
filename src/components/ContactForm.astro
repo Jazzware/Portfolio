@@ -44,7 +44,7 @@ const f = content[lang].contact.form;
   )}
 
   <div class="send">
-    <button class="btn btn-primary" type="submit">{f.send}</button>
+    <button class="btn" type="submit">{f.send}</button>
     <p class="status" role="status" aria-live="polite"></p>
   </div>
 </form>
@@ -119,23 +119,32 @@ const f = content[lang].contact.form;
 </script>
 
 <style>
-  .contact-form { display: flex; flex-direction: column; gap: 22px; }
-  .field { display: flex; flex-direction: column; gap: 8px; }
-  label { font-weight: 600; font-size: 17px; }
+  /* Campos según MASTER.md §7: fondo de horno, filete fuerte, esquina recta; foco cobalto. */
+  .contact-form { display: flex; flex-direction: column; gap: var(--e-3); }
+  .field { display: flex; flex-direction: column; gap: var(--e-1); }
+  label { font-weight: 600; font-size: var(--t-chico); }
   input, textarea {
-    width: 100%; padding: 12px 14px;
-    font: inherit; font-size: 18px; color: var(--texto);
-    background: var(--fondo); border: 2px solid var(--borde); border-radius: 8px;
-    transition: border-color 150ms ease;
+    width: 100%;
+    min-height: 48px;
+    padding: var(--e-1) var(--e-2);
+    font: 400 var(--t-cuerpo) / 1.4 var(--sans);
+    color: var(--hueso);
+    background: var(--horno);
+    border: 1px solid var(--filete-fuerte);
+    border-radius: 0;
+    transition: border-color var(--d-rapida) var(--curva-exacta);
   }
-  input:hover, textarea:hover { border-color: var(--texto-2); }
-  textarea { resize: vertical; min-height: 168px; line-height: 1.5; }
-  input:focus-visible, textarea:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; border-color: var(--texto); }
+  @media (hover: hover) and (pointer: fine) {
+    input:hover, textarea:hover { border-color: var(--hueso-2); }
+  }
+  textarea { resize: vertical; min-height: 168px; padding: var(--e-2); line-height: 1.55; }
+  input:focus-visible, textarea:focus-visible { outline: 2px solid var(--cobalto); outline-offset: 2px; border-color: var(--hueso); }
+  input:disabled, textarea:disabled { border-style: dashed; color: var(--hueso-2); cursor: not-allowed; }
   [aria-invalid='true'] { border-color: var(--error); }
-  .hint { font-size: 15px; color: var(--texto-2); }
-  .error { font-size: 15px; font-weight: 600; color: var(--error); }
+  .hint { font-size: var(--t-chico); color: var(--hueso-2); }
+  .error { font-size: var(--t-chico); font-weight: 600; color: var(--error); }
   .trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
-  .send { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+  .send { display: flex; align-items: center; gap: var(--e-2); flex-wrap: wrap; margin-top: var(--e-1); }
   .status { font-weight: 600; }
   .status[data-kind='ok'] { color: var(--ok); }
   .status[data-kind='bad'] { color: var(--error); }
