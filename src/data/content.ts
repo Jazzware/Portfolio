@@ -15,6 +15,8 @@ export const content = {
       next: 'Próxima estación',
       lede: 'Más de ocho años desarrollando software. Mi último puesto fue en Solera, donde trabajé en una plataforma de CRM usada por ~3,200 agencias automotrices: backend en C#/.NET, SQL Server y CI/CD. He sido el punto de escalación cuando algo falla en producción, he migrado sistemas legacy a la web y fundé el equipo local de CRM en México, como desarrollador y Scrum Master.',
       seeking: 'Busco un puesto de Software Engineer III en .NET.',
+      hobbies: 'Cuando no programo, hago cerámica. También me apasionan los dinosaurios y los videojuegos.',
+      figure: { caption: 'Fig. 1.', text: 'Jarra torneada, corte y exterior.', label: 'Dibujo de una jarra torneada: media en corte y media por fuera, con escala de 5 cm.' },
       contact: 'Escríbeme',
       play: 'Jugar PaleoSharp',
       cv: 'Descargar CV',
@@ -34,6 +36,16 @@ export const content = {
       play: 'Jugar PaleoSharp',
       source: 'Ver el código',
       desktop: 'Se juega mejor en una computadora con teclado.',
+      figure: {
+        caption: 'Fig. 2.',
+        text: 'Un nivel de excavación de PaleoSharp. EXC-1 se mueve por la cuadrícula con el C# que escribes.',
+        alt: 'Nivel de PaleoSharp: una cuadrícula de excavación de 13 por 5 casillas con EXC-1, dos raptores y una bandera.',
+        labels: [
+          { name: 'Raptor', note: 'en la cuadrícula de excavación' },
+          { name: 'EXC-1', note: 'el robot que programas en C#' },
+          { name: 'Bandera', note: 'coordenadas (11, 2)' },
+        ],
+      },
     },
     experience: {
       title: 'Experiencia',
@@ -46,6 +58,14 @@ export const content = {
         'Entregar con CI/CD (GitHub Actions, Jenkins, TeamCity, Octopus Deploy), observar con ELK y orquestar IA dentro del pipeline.',
       ],
       present: 'hoy',
+      vessel: {
+        caption: 'Fig. 3.',
+        text: 'La trayectoria como vasija de rollos: un rollo por puesto, el más antiguo en la base. La altura de cada rollo sigue el tiempo en el puesto.',
+        list: 'Puestos, del más reciente al más antiguo',
+        stack: 'Tecnologías',
+        next: { name: 'Lo que sigue', role: 'Software Engineer III, .NET', when: 'Abierto', title: 'El siguiente rollo', text: 'Busco un puesto de Software Engineer III en .NET, en híbrido en CDMX o remoto. Ese rollo lo pones tú.', cta: 'Escríbeme' },
+        base: { label: 'Base de la vasija', degree: 'Licenciatura en Ingeniería en Sistemas Computacionales', school: 'Universidad del Valle de México', when: '2015–2020' },
+      },
       duration: (y: number, m: number) => [y && (y === 1 ? '1 año' : `${y} años`), m && (m === 1 ? '1 mes' : `${m} meses`)].filter(Boolean).join(' y '),
     },
     skills: {
@@ -90,6 +110,21 @@ export const content = {
       },
     },
     footer: 'Hecho con Astro y publicado en Cloudflare Pages.',
+    rewards: {
+      count: (n: number, total: number) => `Descubrimiento ${n} de ${total}`,
+      jar: 'La jarra está cocida.',
+      coil: 'Encontraste el rollo que falta.',
+      base: 'Encontraste la base: ahí empezó todo.',
+      dig: 'Encontraste un terópodo.',
+      earth: 'Franja de tierra',
+      fossil: 'Esqueleto de un terópodo pequeño en postura de muerte, tal como se encontró.',
+    },
+    shortcuts: {
+      button: 'Atajos de teclado',
+      title: 'Atajos de teclado',
+      items: [['1', 'PaleoSharp'], ['2', 'Experiencia'], ['3', 'Herramientas'], ['4', 'Contáctame'], ['?', 'Mostrar u ocultar esta lista']],
+      close: 'Cerrar',
+    },
   },
   en: {
     meta: {
@@ -103,6 +138,8 @@ export const content = {
       next: 'Next station',
       lede: 'Over eight years of software development. My latest role was at Solera, where I worked on a CRM platform used by ~3,200 automotive dealerships: backend in C#/.NET, SQL Server and CI/CD. I have been the escalation point when production breaks, moved legacy systems to the web, and founded the local CRM team in Mexico, as both developer and Scrum Master.',
       seeking: 'I am looking for a Software Engineer III role in .NET.',
+      hobbies: "When I'm not coding, I make pottery. I'm also into dinosaurs and video games.",
+      figure: { caption: 'Fig. 1.', text: 'Wheel-thrown jar, section and exterior.', label: 'Drawing of a wheel-thrown jar: half in section, half from the outside, with a 5 cm scale.' },
       contact: 'Email me',
       play: 'Play PaleoSharp',
       cv: 'Download CV',
@@ -122,6 +159,16 @@ export const content = {
       play: 'Play PaleoSharp',
       source: 'View the source',
       desktop: 'Best played on a computer with a keyboard.',
+      figure: {
+        caption: 'Fig. 2.',
+        text: 'A PaleoSharp excavation level. EXC-1 moves on the grid by the C# you write.',
+        alt: 'A PaleoSharp level: a 13 by 5 excavation grid with EXC-1, two raptors and a flag.',
+        labels: [
+          { name: 'Raptor', note: 'on the dig grid' },
+          { name: 'EXC-1', note: 'the robot you program in C#' },
+          { name: 'Flag', note: 'grid coordinates (11, 2)' },
+        ],
+      },
     },
     experience: {
       title: 'Experience',
@@ -134,6 +181,14 @@ export const content = {
         'Shipping with CI/CD (GitHub Actions, Jenkins, TeamCity, Octopus Deploy), observing with ELK and orchestrating AI inside the pipeline.',
       ],
       present: 'now',
+      vessel: {
+        caption: 'Fig. 3.',
+        text: 'My career as a coil-built vessel: one coil per role, the oldest at the base. Each coil is as tall as the time in the role.',
+        list: 'Roles, newest first',
+        stack: 'Technologies',
+        next: { name: 'Next', role: 'Software Engineer III, .NET', when: 'Open', title: 'The next coil', text: 'I am looking for a Software Engineer III role in .NET, hybrid in Mexico City or remote. That coil is yours to add.', cta: 'Email me' },
+        base: { label: 'Base of the vessel', degree: "Bachelor's in Computer Systems Engineering", school: 'Universidad del Valle de México', when: '2015–2020' },
+      },
       duration: (y: number, m: number) => [y && (y === 1 ? '1 year' : `${y} years`), m && (m === 1 ? '1 month' : `${m} months`)].filter(Boolean).join(', '),
     },
     skills: {
@@ -178,5 +233,20 @@ export const content = {
       },
     },
     footer: 'Built with Astro and hosted on Cloudflare Pages.',
+    rewards: {
+      count: (n: number, total: number) => `Discovery ${n} of ${total}`,
+      jar: 'The jar is fired.',
+      coil: 'You found the missing coil.',
+      base: 'You found the base: where it all began.',
+      dig: 'You found a theropod.',
+      earth: 'A strip of earth',
+      fossil: 'Skeleton of a small theropod in death pose, as it was found.',
+    },
+    shortcuts: {
+      button: 'Keyboard shortcuts',
+      title: 'Keyboard shortcuts',
+      items: [['1', 'PaleoSharp'], ['2', 'Experience'], ['3', 'Tools'], ['4', 'Contact me'], ['?', 'Show or hide this list']],
+      close: 'Close',
+    },
   },
 } satisfies Record<Lang, unknown>;

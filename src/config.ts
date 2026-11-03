@@ -14,7 +14,7 @@ export const site = {
   linkedin: 'https://www.linkedin.com/in/ivan-lopezv/' as string | null,
   github: null as string | null,
   /** Ruta o URL del CV en PDF; por ejemplo '/cv-ivan-lopez.pdf' si lo pones en public/. */
-  cv: { es: null as string | null, en: null as string | null },
+  cv: { es: '/cv/CV_SEIII_Ivan_Lopez_Villegas_ES.pdf' as string | null, en: '/cv/CV_SEIII_Ivan_Lopez_Villegas_EN.pdf' as string | null },
   paleosharp: {
     play: 'https://paleosharp.jazzware.dev',
     /** Repositorio público del juego, si decides abrirlo. */
