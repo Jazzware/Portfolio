@@ -7,6 +7,8 @@ export interface Job extends Layer {
   id: string;
   current: boolean;
   startYear: number;
+  /** Año en que terminó, o null si sigue vigente. */
+  endYear: number | null;
   /** 'feb 2022 – hoy' */
   dates: string;
   /** '4 años y 10 meses' */
@@ -27,9 +29,10 @@ export function jobs(lang: Lang, now = new Date()): Job[] {
     const months = Math.max(1, (to.getFullYear() - from.getFullYear()) * 12 + to.getMonth() - from.getMonth() + 1);
     return {
       ...job,
-      id: `exp-${slug(job.company)}`,
+      id: `exp-${slug(job.key ?? job.company)}`,
       current: job.to === null,
       startYear: from.getFullYear(),
+      endYear: job.to ? to.getFullYear() : null,
       dates: `${fmt.format(from)} – ${job.to ? fmt.format(to) : t.present}`,
       duration: t.duration(Math.floor(months / 12), months % 12),
     };
