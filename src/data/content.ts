@@ -5,7 +5,7 @@ export const content = {
   es: {
     meta: {
       title: 'Iván López Villegas, ingeniero de software',
-      description: 'Ingeniero de software en Ciudad de México: C#/.NET, SQL Server y React. Autor de PaleoSharp, un juego para aprender C# que corre en el navegador.',
+      description: 'Ingeniero de software en CDMX, 8+ años: C#/.NET, SQL Server y React. Autor de PaleoSharp, un juego para aprender C# en el navegador.',
     },
     nav: { skip: 'Saltar al contenido', menu: 'Menú', sections: 'Secciones', project: 'PaleoSharp', experience: 'Experiencia', skills: 'Herramientas', contact: 'Contáctame', other: 'English', otherHref: '/en/' },
     hero: {
@@ -13,15 +13,15 @@ export const content = {
       /** Nombre del mapa de trayectoria (lo leen los lectores de pantalla). */
       path: 'Trayectoria, del primer trabajo al siguiente',
       next: 'Próxima estación',
-      lede: 'Más de ocho años de desarrollo de software; desde 2020, servicios backend en C# y .NET sobre SQL Server, e implementación de procesos de CI/CD. He sido el punto de escalación cuando algo falla en producción, he migrado sistemas legacy a la web y he acompañado a otros ingenieros como mentor y Scrum Master.',
-      seeking: 'Busco un puesto de Software Engineer III.',
+      lede: 'Más de ocho años desarrollando software. Mi último puesto fue en Solera, donde trabajé en una plataforma de CRM usada por ~3,200 agencias automotrices: backend en C#/.NET, SQL Server y CI/CD. He sido el punto de escalación cuando algo falla en producción, he migrado sistemas legacy a la web y fundé el equipo local de CRM en México, como desarrollador y Scrum Master.',
+      seeking: 'Busco un puesto de Software Engineer III en .NET.',
       contact: 'Escríbeme',
       play: 'Jugar PaleoSharp',
       cv: 'Descargar CV',
     },
     project: {
       title: 'PaleoSharp',
-      summary: 'Un juego para aprender C# programando a EXC-1, un robot paleontólogo. Empieza con tu primera línea de código y termina en retos de entrevista de nivel SE II y SE III. Lo construí para entrenar mis propias entrevistas y corre completo en tu navegador.',
+      summary: 'Un juego para aprender C# programando a EXC-1, un robot paleontólogo. Empieza con tu primera línea de código y termina en retos de entrevista de nivel SE II y SE III. Lo construí para entrenar mis propias entrevistas y corre completo en tu navegador. Desde joven, los videojuegos y el mundo competitivo han sido parte de mi aprendizaje; PaleoSharp junta eso con mi oficio.',
       scope: '30 niveles de excavación, 52 retos tipo entrevista y 38 lecciones con repaso.',
       howTitle: 'Cómo está hecho',
       how: [
@@ -39,11 +39,11 @@ export const content = {
       title: 'Experiencia',
       practicesTitle: 'Lo que hago bien',
       practices: [
-        'Resolver incidentes en producción como punto de escalación técnico.',
-        'Migrar sistemas legacy: de Visual FoxPro a la web, o de un framework y una base de datos a sus versiones nuevas.',
-        'Acompañar a otros ingenieros como mentor y facilitar al equipo como Scrum Master.',
-        'Entregar con CI/CD (GitHub Actions, Jenkins, TeamCity, Octopus Deploy) y observar con ELK.',
-        'Usar IA, como GitHub Copilot, dentro del flujo de desarrollo.',
+        'Resolver incidentes en producción como punto de escalación técnico, del error genérico a la causa raíz.',
+        'Migrar sistemas legacy: de Visual FoxPro a la web, de un framework y una base de datos a sus versiones nuevas.',
+        'Liderar sin cargo formal: fundé el equipo local de CRM, mentoré a compañeros y facilité al equipo como Scrum Master mientras desarrollaba.',
+        'Colaborar con equipos en México, India, EE. UU. y China.',
+        'Entregar con CI/CD (GitHub Actions, Jenkins, TeamCity, Octopus Deploy), observar con ELK y orquestar IA dentro del pipeline.',
       ],
       present: 'hoy',
       duration: (y: number, m: number) => [y && (y === 1 ? '1 año' : `${y} años`), m && (m === 1 ? '1 mes' : `${m} meses`)].filter(Boolean).join(' y '),
@@ -58,14 +58,14 @@ export const content = {
         { name: 'También he usado', items: ['Java', 'PHP', 'Laravel', 'Python', 'Django'] },
       ],
       education: [
-        { name: 'Formación', items: ['Ingeniería de Software, Universidad del Valle de México'] },
+        { name: 'Formación', items: ['Licenciatura en Ingeniería en Sistemas Computacionales, Universidad del Valle de México (2015–2020)'] },
         { name: 'Cursos', items: ['Scrum Master Training (Solera, 2023)', 'Git y GitHub (Platzi, 2021)', 'CCNA (UVM, 2018)'] },
         { name: 'Idiomas', items: ['Español nativo', 'Inglés C1', 'Francés A1'] },
       ],
     },
     contact: {
       title: 'Contáctame',
-      text: 'Si tienes un puesto de backend o full stack con .NET, me interesa platicarlo. Escríbeme aquí y te respondo a tu correo.',
+      text: 'Si tienes un puesto de backend o full stack con .NET, me interesa platicarlo. Disponible en híbrido en CDMX o remoto. Escríbeme aquí y te respondo a tu correo.',
       elsewhere: 'También me encuentras en',
       email: 'Correo',
       linkedin: 'LinkedIn',
@@ -94,22 +94,22 @@ export const content = {
   en: {
     meta: {
       title: 'Iván López Villegas, software engineer',
-      description: 'Software engineer in Mexico City: C#/.NET, SQL Server and React. Author of PaleoSharp, a game for learning C# that runs in the browser.',
+      description: 'Software engineer in Mexico City, 8+ years: C#/.NET, SQL Server and React. Author of PaleoSharp, a game for learning C# in the browser.',
     },
     nav: { skip: 'Skip to content', menu: 'Menu', sections: 'Sections', project: 'PaleoSharp', experience: 'Experience', skills: 'Tools', contact: 'Contact me', other: 'Español', otherHref: '/' },
     hero: {
       role: 'Software engineer in Mexico City',
       path: 'Career path, from the first job to the next one',
       next: 'Next station',
-      lede: 'Over eight years of software development; since 2020, backend services in C# and .NET on SQL Server, and implementing CI/CD processes. I have been the escalation point when production breaks, moved legacy systems to the web, and supported other engineers as a mentor and Scrum Master.',
-      seeking: 'I am looking for a Software Engineer III role.',
+      lede: 'Over eight years of software development. My latest role was at Solera, where I worked on a CRM platform used by ~3,200 automotive dealerships: backend in C#/.NET, SQL Server and CI/CD. I have been the escalation point when production breaks, moved legacy systems to the web, and founded the local CRM team in Mexico, as both developer and Scrum Master.',
+      seeking: 'I am looking for a Software Engineer III role in .NET.',
       contact: 'Email me',
       play: 'Play PaleoSharp',
       cv: 'Download CV',
     },
     project: {
       title: 'PaleoSharp',
-      summary: 'A game for learning C# by programming EXC-1, a paleontologist robot. It starts with your first line of code and ends with SE II and SE III interview problems. I built it to train for my own interviews, and it runs entirely in your browser.',
+      summary: 'A game for learning C# by programming EXC-1, a paleontologist robot. It starts with your first line of code and ends with SE II and SE III interview problems. I built it to train for my own interviews, and it runs entirely in your browser. Since a young age, video games and the competitive world have been part of my learning; PaleoSharp brings that together with my craft.',
       scope: '30 excavation levels, 52 interview-style challenges and 38 lessons with quizzes. The game text is in Spanish.',
       howTitle: 'How it is built',
       how: [
@@ -127,11 +127,11 @@ export const content = {
       title: 'Experience',
       practicesTitle: 'What I do well',
       practices: [
-        'Resolving production incidents as the technical escalation point.',
+        'Resolving production incidents as the technical escalation point, from a generic error to root cause.',
         'Migrating legacy systems: from Visual FoxPro to the web, or from one framework and database to their newer versions.',
-        'Mentoring other engineers and facilitating the team as Scrum Master.',
-        'Shipping with CI/CD (GitHub Actions, Jenkins, TeamCity, Octopus Deploy) and observing with ELK.',
-        'Using AI, such as GitHub Copilot, as part of the development workflow.',
+        'Leading without a formal title: I founded the local CRM team, mentored teammates and facilitated the team as Scrum Master while developing.',
+        'Working with teams in Mexico, India, the US and China.',
+        'Shipping with CI/CD (GitHub Actions, Jenkins, TeamCity, Octopus Deploy), observing with ELK and orchestrating AI inside the pipeline.',
       ],
       present: 'now',
       duration: (y: number, m: number) => [y && (y === 1 ? '1 year' : `${y} years`), m && (m === 1 ? '1 month' : `${m} months`)].filter(Boolean).join(', '),
@@ -146,14 +146,14 @@ export const content = {
         { name: 'Also used', items: ['Java', 'PHP', 'Laravel', 'Python', 'Django'] },
       ],
       education: [
-        { name: 'Education', items: ["Bachelor's degree in Software Engineering, Universidad del Valle de México"] },
+        { name: 'Education', items: ["Bachelor's degree in Computer Systems Engineering, Universidad del Valle de México (2015–2020)"] },
         { name: 'Courses', items: ['Scrum Master Training (Solera, 2023)', 'Git and GitHub (Platzi, 2021)', 'CCNA (UVM, 2018)'] },
         { name: 'Languages', items: ['Spanish (native)', 'English (C1)', 'French (A1)'] },
       ],
     },
     contact: {
       title: 'Contact me',
-      text: 'If you have a backend or full-stack .NET role, I would be glad to talk. Write to me here and I will reply to your email.',
+      text: 'If you have a backend or full-stack .NET role, I would be glad to talk. Available hybrid in Mexico City or remote. Write to me here and I will reply to your email.',
       elsewhere: 'You can also find me on',
       email: 'Email',
       linkedin: 'LinkedIn',

@@ -14,6 +14,10 @@ export interface Layer {
   highlights: Record<Lang, string[]>;
   stack?: string;
   pending?: boolean;
+  /** Identificador propio para el ancla, cuando dos capas comparten empresa. */
+  key?: string;
+  /** true: se ve en la sección de experiencia pero no es una estación del mapa de la portada. */
+  minor?: boolean;
 }
 
 export const experience: Layer[] = [
@@ -21,22 +25,24 @@ export const experience: Layer[] = [
     company: 'Solera',
     role: { es: 'Software Engineer II', en: 'Software Engineer II' },
     from: '2022-02',
-    to: null,
+    to: '2026-09',
     highlights: {
       es: [
-        'Dirigí el proyecto para sincronizar los índices de base de datos entre ambientes, de pruebas a producción.',
-        'Participé en la integración con Covideo, que permite incluir videos en los correos promocionales de agencias automotrices.',
-        'Colaboré en la migración del framework de desarrollo y de la base de datos, y en la configuración de los ambientes virtuales de desarrollo y pruebas.',
-        'Mantuve y actualicé reportes SSRS, ETLs y stored procedures, y la conexión entre las capas de la aplicación.',
+        'Lideré de principio a fin la sincronización de índices en ~120 bases de datos que dan servicio a ~3,200 clientes del CRM.',
+        'Primer ingeniero de software contratado en México para el equipo de CRM; fundé el equipo local y definí sus acuerdos de trabajo y ceremonias ágiles, como desarrollador y Scrum Master.',
+        'Fui punto de escalación en caídas de producción, de un error genérico a la causa raíz, y mentor de compañeros en C#, SQL y depuración.',
+        'Construí una integración con Covideo para incluir videos personalizados en los correos de agencias automotrices, y mantuve reportes SSRS y stored procedures.',
+        'Orquesté un flujo de ticket a PR con mínima intervención humana: GitHub Copilot (Agent mode) y GitHub Actions para validar antes del merge.',
       ],
       en: [
-        'Led the project to synchronize database indexes across environments, from testing to production.',
-        'Contributed to the Covideo integration, which lets automotive dealerships include videos in promotional emails.',
-        'Helped migrate the development framework and the database, and set up the virtual environments for development and testing.',
-        'Maintained and updated SSRS reports, ETLs and stored procedures, and the connectivity between application layers.',
+        'Led end-to-end the index synchronization across ~120 databases serving ~3,200 CRM customers.',
+        'First software engineer hired in Mexico for the CRM team; founded the local team and defined its working agreements and agile ceremonies, as both developer and Scrum Master.',
+        'Was the escalation point for production outages, from a generic error to root cause, and mentored teammates on C#, SQL and debugging.',
+        'Built an integration with Covideo that embeds personalized videos in promotional emails for automotive dealerships, and maintained SSRS reports and stored procedures.',
+        'Orchestrated a ticket-to-PR workflow with minimal human intervention: GitHub Copilot (Agent mode) and GitHub Actions for pre-merge validation.',
       ],
     },
-    stack: 'C#, .NET, SQL Server, ELK, React, AngularJS, TypeScript, Docker, Octopus Deploy, Jenkins, TeamCity, Jira',
+    stack: 'C#, .NET, SQL Server, SSRS, ELK, React, AngularJS, TypeScript, Docker, GitHub Actions, Octopus Deploy, Jenkins, TeamCity, Jira',
   },
   {
     company: 'GoNet',
@@ -45,23 +51,38 @@ export const experience: Layer[] = [
     to: '2022-02',
     highlights: {
       es: [
-        'Diseñé y desarrollé un ERP con ASP.NET 5, patrones de arquitectura y EF Core sobre PostgreSQL.',
-        'Escribí un programa en Excel VBA con expresiones regulares que deja el 99 % de los datos de prenómina limpios y corrige sus errores.',
+        'Identifiqué la necesidad y lideré de principio a fin el proceso de credenciales de empleados conforme a la nueva normativa laboral: de $29 a $13 MXN por credencial (~55 % de ahorro).',
+        'Diseñé y desarrollé con mi equipo un ERP desde cero en ASP.NET 5 y EF Core sobre PostgreSQL que reemplazó el sistema legado.',
+        'Automaticé la prenómina con Excel VBA y expresiones regulares (99 % de datos limpios) y reemplacé un proceso manual de reportes con una automatización en C#.',
         'Di soporte y mantenimiento a módulos del sistema hechos en Java.',
       ],
       en: [
-        'Designed and built an ERP with ASP.NET 5, architectural patterns and EF Core on PostgreSQL.',
-        'Wrote an Excel VBA program with regular expressions that keeps 99% of pre-payroll data clean and fixes its errors.',
+        'Identified the need and led end-to-end the employee ID badge process, compliant with new Mexican labor regulations: from $29 to $13 MXN per badge (~55% savings).',
+        'Designed and built, with my team, an ERP from scratch in ASP.NET 5 and EF Core on PostgreSQL that replaced the legacy system.',
+        'Automated pre-payroll with Excel VBA and regular expressions (99% clean data) and replaced a manual reporting process with a C# automation.',
         'Supported and maintained system modules written in Java.',
       ],
     },
     stack: 'C#, .NET, Blazor, Java, JavaScript, PostgreSQL, VBA',
   },
   {
+    company: 'Apeyron Informática',
+    key: 'apeyron-2020',
+    minor: true,
+    role: { es: 'Jr. Software Developer', en: 'Jr. Software Developer' },
+    from: '2020-04',
+    to: '2020-10',
+    highlights: {
+      es: ['Desarrollé una aplicación web en PHP para administrar flotillas, citas y control de asistencia (GestoCar).'],
+      en: ['Built a PHP web application to manage fleets, appointments and attendance control (GestoCar).'],
+    },
+    stack: 'PHP, HTML5',
+  },
+  {
     company: 'MW Software',
-    role: { es: 'Software Developer', en: 'Software Developer' },
+    role: { es: 'Jr. Software Developer', en: 'Jr. Software Developer' },
     from: '2018-12',
-    to: '2020-12',
+    to: '2019-12',
     highlights: {
       es: [
         'Migré WINSIAF, un sistema hecho a la medida en Visual FoxPro, a una aplicación web en PHP.',
@@ -90,5 +111,35 @@ export const experience: Layer[] = [
       ],
     },
     stack: 'PHP, Laravel, JavaScript, MySQL, Bitbucket',
+  },
+  {
+    company: 'Apeyron Informática',
+    key: 'apeyron-2017',
+    minor: true,
+    role: { es: 'Jr. Software Developer', en: 'Jr. Software Developer' },
+    from: '2017-08',
+    to: '2018-01',
+    highlights: {
+      es: ['Construí una app nativa de Android en Java, con arquitectura MVC y bases de datos local y remota.'],
+      en: ['Built a native Android app in Java, with MVC architecture and local and remote databases.'],
+    },
+    stack: 'Java, Android Studio, Materialize CSS',
+  },
+  {
+    company: 'Buró de Crédito',
+    role: { es: 'Administrador de bases de datos Jr.', en: 'Junior Database Administrator' },
+    from: '2016-08',
+    to: '2017-08',
+    highlights: {
+      es: [
+        'Automaticé con Bash la validación de datos entre instancias Informix en una migración a gran escala.',
+        'Administré respaldos y restauraciones entre cintas e instancias, verificando la integridad de los datos.',
+      ],
+      en: [
+        'Automated data validation between Informix instances with Bash during a large-scale migration.',
+        'Managed backups and restores between tape storage and instances, verifying data integrity.',
+      ],
+    },
+    stack: 'Informix, Bash',
   },
 ];

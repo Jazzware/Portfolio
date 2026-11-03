@@ -12,15 +12,18 @@ import { jobs } from '../lib/jobs';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = content[lang];
-const stations = jobs(lang).reverse();
+const stations = jobs(lang).filter((j) => !j.minor).reverse();
+// El tren se estaciona en el puesto actual o, si no hay uno, en el último que tuve.
+const currentIndex = stations.findIndex((s) => s.current);
+const parked = currentIndex >= 0 ? currentIndex : stations.length - 1;
 ---
 <ol class="map" aria-label={t.hero.path} style={`--n:${stations.length + 1}`}>
-  {stations.map((s) => (
-    <li class:list={['station', { now: s.current }]}>
-      {s.current && <span class="train" aria-hidden="true"></span>}
+  {stations.map((s, i) => (
+    <li class:list={['station', { now: i === parked }]}>
+      {i === parked && <span class="train" aria-hidden="true"></span>}
       <a href={`#${s.id}`}>
         <span class="dot" aria-hidden="true"></span>
-        <span class="year">{s.current ? `${s.startYear} – ${t.experience.present}` : s.startYear}</span>
+        <span class="year">{s.current ? `${s.startYear} – ${t.experience.present}` : i === parked && s.endYear ? `${s.startYear} – ${s.endYear}` : s.startYear}</span>
         <span class="company">{s.company}</span>
         <span class="role">{s.role[lang]}</span>
       </a>
