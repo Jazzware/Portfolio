@@ -4,7 +4,12 @@
 
 const raiz = document.documentElement;
 const css = getComputedStyle(raiz);
-const ms = (nombre: string) => parseFloat(css.getPropertyValue(nombre)) || 0;
+// El minificador de CSS reescribe 3200ms como 3.2s: se convierten las dos unidades a milisegundos.
+const ms = (nombre: string) => {
+  const v = css.getPropertyValue(nombre).trim();
+  const n = parseFloat(v) || 0;
+  return /[\d.]s$/.test(v) ? n * 1000 : n;
+};
 const valor = (nombre: string) => css.getPropertyValue(nombre).trim();
 
 export const T = {
