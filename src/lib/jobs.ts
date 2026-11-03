@@ -13,6 +13,8 @@ export interface Job extends Layer {
   dates: string;
   /** '4 años y 10 meses' */
   duration: string;
+  /** Meses en el puesto, contando el primero y el último. */
+  months: number;
 }
 
 const parse = (s: string) => { const [y, m] = s.split('-').map(Number); return new Date(y, m - 1, 1); };
@@ -35,6 +37,7 @@ export function jobs(lang: Lang, now = new Date()): Job[] {
       endYear: job.to ? to.getFullYear() : null,
       dates: `${fmt.format(from)} – ${job.to ? fmt.format(to) : t.present}`,
       duration: t.duration(Math.floor(months / 12), months % 12),
+      months,
     };
   });
 }
