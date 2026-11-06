@@ -22,21 +22,36 @@ en local: `npm run build && npx wrangler pages dev dist`.
 
 | Archivo | Qué contiene |
 | --- | --- |
-| `src/config.ts` | Dominio, LinkedIn, GitHub, CV, enlaces del juego y la clave pública del captcha. Un campo en `null` oculta su enlace. |
+| `src/config.ts` | Dominio, correo visible, LinkedIn, GitHub y enlaces del juego. El captcha usa `PUBLIC_TURNSTILE_SITE_KEY` al construir; sin ella el formulario queda deshabilitado. |
 | `functions/api/contacto.ts` | Recibe el formulario «Contáctame» y te lo manda por correo (Resend). |
-| `src/data/experience.ts` | Los trabajos, del más reciente al más antiguo. `pending: true` marca datos de ejemplo (se ven en gris, con una etiqueta); quítalo al poner los reales. |
-| `src/data/content.ts` | Todos los textos, en español e inglés. |
-| `src/assets/` | Capturas del juego. El diseño actual no las usa; sirven si agregas una imagen de vista previa (`og:image`). |
-| `public/` | Archivos que se sirven tal cual: el CV en PDF, el ícono, `_headers`. |
+| `src/data/experience.ts` | Los trabajos, del más reciente al más antiguo. Las fechas (`from` y `to`, en `AAAA-MM`; `to: null` si sigue vigente) dan la altura de cada rollo de la vasija. |
+| `src/data/content.ts` | Todos los textos, en español e inglés, incluida la carrera que muestra la base de la vasija (`experience.vessel.base`). |
+| `MASTER.md` | El sistema de diseño: paleta, tipografía, espaciado, movimiento, componentes, estructura de la página, recompensas ocultas y accesibilidad. |
+| `src/styles/tokens.css` | Los valores de `MASTER.md` como variables CSS: colores, tamaños de texto, espacios y duraciones. |
+| `src/assets/` | Capturas del juego. La Fig. 2 usa `paleosharp-yacimiento.png`. |
+| `public/` | Archivos que se sirven tal cual: el ícono, `_headers`. |
 
-La trayectoria se dibuja como una línea del Metro de la Ciudad de México. En la portada, cada trabajo es una
-estación, del más antiguo al actual y a la misma distancia (como en un mapa de transporte), y un tramo punteado
-lleva a la siguiente estación: el puesto que buscas, que enlaza al formulario. Cada estación lleva a su parada en
-la sección de experiencia, donde la misma línea corre hacia abajo.
+## Diseño
 
-Movimiento (todo se desactiva si el sistema pide reducir el movimiento, y sin JavaScript la página se ve completa):
-al cargar, un tren entra por la orilla, se detiene en cada estación y se estaciona en la actual; luego el tramo
-punteado avanza hacia la siguiente. En la sección de experiencia, la línea se enciende conforme lees.
+El sitio se dibuja con la convención de la ilustración arqueológica: las vasijas de las figuras 1 y 3 van mitad en
+corte (rayado) y mitad por fuera. El cobalto marca lo del ingeniero y el rojo óxido lo del creador. La tipografía es
+IBM Plex Sans y Mono, servida desde el propio sitio (`@fontsource`); el sitio no hace peticiones a terceros, salvo
+Turnstile si lo activas. La guía completa está en `MASTER.md`.
+
+- **Fig. 1, portada** (`Jarra.astro`): una jarra torneada en corte y exterior.
+- **Fig. 2, PaleoSharp** (`FiguraPaleo.astro`): una captura real de un nivel, montada como espécimen y rotulada
+  con líneas guía.
+- **Fig. 3, experiencia** (`Vasija.astro`): la trayectoria como vasija de rollos. Un rollo por puesto, el más
+  antiguo en la base; la altura de cada rollo sigue los meses en el puesto. Al elegir un rollo, el panel de al lado
+  muestra el puesto. Arriba, un rollo punteado para el siguiente puesto. En pantallas de menos de 1000 px, o sin
+  JavaScript, la vasija se reemplaza por un catálogo de filas que se abren.
+
+Atajos de teclado: `1` a `4` llevan a cada sección y `?` muestra la lista. Hay cuatro recompensas ocultas con un
+contador; están descritas en `MASTER.md` §9. Por debajo de 1000 px, sin la vasija, el contador cuenta dos.
+
+Movimiento (`src/scripts/movimiento.ts`): las figuras se trazan una vez al entrar en pantalla y los bloques suben
+8 px mientras aparecen. Si el sistema pide reducir el movimiento, las figuras aparecen ya dibujadas y los bloques
+solo hacen un fundido corto. Sin JavaScript, o si el script no llega en 2.5 s, la página se ve completa y quieta.
 
 ## Publicar en Cloudflare Pages
 
@@ -48,22 +63,34 @@ punteado avanza hacia la siguiente. En la sección de experiencia, la línea se 
    redirige). Ya está en `site.url` de `src/config.ts`. El juego vive en `paleosharp.jazzware.dev`, en su propio
    proyecto de Pages.
 
+Sin Git, `npm run deploy` construye y sube `dist/` con Wrangler. El proyecto de Pages debe llamarse `portafolio`; la
+primera vez, Wrangler pide iniciar sesión en Cloudflare.
+
 ## Formulario «Contáctame»
 
 Los mensajes te llegan por correo y puedes responder directo a quien escribió; tu dirección no aparece en la página.
-Lo envía [Resend](https://resend.com) (gratis hasta 3,000 correos al mes).
+Lo envía [Resend](https://resend.com); consulta en tu cuenta la cuota vigente.
 
 1. Crea una cuenta en Resend **con el correo donde quieres recibir los mensajes** y genera una API key.
    Sin dominio propio, Resend solo deja enviar a ese mismo correo, que es justo lo que se necesita.
 2. En Cloudflare, proyecto de Pages → *Settings → Variables and Secrets*, agrega:
    - `RESEND_API_KEY` (tipo *Secret*): la API key.
    - `CONTACT_TO`: tu correo.
-3. Vuelve a desplegar (un push basta). Mientras falten, el formulario dice que no está disponible y sugiere LinkedIn.
+   - `TURNSTILE_SECRET_KEY` (tipo *Secret*): la clave secreta de Turnstile.
+   - `PUBLIC_TURNSTILE_SITE_KEY`: la clave pública del widget, disponible durante el build.
+3. Sigue [SECURITY.md](SECURITY.md) para crear el widget y la regla de límite de solicitudes.
+4. Vuelve a desplegar después de configurar las variables. Mientras falte la clave pública, el botón está
+   deshabilitado; si falta una variable obligatoria del servidor, la función no envía correos.
 
 Para que los correos salgan de tu dominio (mejor entrega, menos spam): en Resend, *Domains → Add domain* →
 `jazzware.dev`; como el DNS está en Cloudflare, Resend agrega los registros solo (o los copias a mano). Luego agrega
 `CONTACT_FROM` = `Portafolio <contacto@jazzware.dev>` en Cloudflare. No necesitas un buzón real en esa dirección.
 
-**Contra spam:** hay un campo trampa que los bots llenan y las personas no ven. Si empieza a llegar spam, activa
-[Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) (gratis): pon la *site key* en
-`turnstileSiteKey` de `src/config.ts` y la *secret key* como `TURNSTILE_SECRET_KEY` en Cloudflare.
+**Contra spam:** Turnstile es obligatorio y se valida en el servidor, incluido el dominio y la acción `contact`.
+También hay un campo trampa. El límite de solicitudes se configura en Cloudflare; no está activo por cambiar
+el código. Las instrucciones y pendientes de publicación están en [SECURITY.md](SECURITY.md).
+
+Para desarrollo, copia `.env.example` a `.env` y `.dev.vars.example` a `.dev.vars`. Completa únicamente las
+copias locales con Resend de pruebas y un widget Turnstile de desarrollo que autorice `localhost`. Los archivos
+con valores reales están ignorados. Los tests automatizados simulan Siteverify; las claves dummy no garantizan
+el dominio y la acción que exige este servidor.
