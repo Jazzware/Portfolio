@@ -1,6 +1,6 @@
 ---
 // Recompensa oculta 3 (MASTER.md §9): una franja de tierra en el pie. Cada activación abre más el pozo;
-// a la quinta aparece el terópodo, trazándose. El esqueleto se genera solo entonces (scripts/esqueleto.ts).
+// a la quinta aparece el anquilosaurio, trazándose. Sus trazos se cargan solo entonces (scripts/esqueleto.ts).
 import { content, type Lang } from '../data/content';
 
 interface Props { lang: Lang }
@@ -25,7 +25,7 @@ const r = content[lang].rewards;
       <rect width="1200" height="160" fill="url(#tierra-a)" />
       <rect width="1200" height="160" fill="url(#tierra-b)" />
     </g>
-    <g class="fosil" transform="translate(401 -10) scale(0.5)"></g>
+    <g class="fosil"></g>
   </svg>
 </button>
 
@@ -49,11 +49,12 @@ const r = content[lang].rewards;
       golpes++;
       abre((golpes - 1) / GOLPES, golpes / GOLPES);
       if (golpes < GOLPES) return;
-      construyeEsqueleto(fosil);
-      traza(boton.querySelector('svg')!);
-      boton.setAttribute('aria-label', boton.dataset.fosil ?? '');
-      boton.classList.add('excavada');
-      descubre('excavacion', boton.dataset.mensaje ?? '');
+      void construyeEsqueleto(fosil).then(() => {
+        traza(boton.querySelector('svg')!);
+        boton.setAttribute('aria-label', boton.dataset.fosil ?? '');
+        boton.classList.add('excavada');
+        descubre('excavacion', boton.dataset.mensaje ?? '');
+      });
     });
   }
 </script>
@@ -74,7 +75,7 @@ const r = content[lang].rewards;
   pattern circle { fill: var(--filete-fuerte); }
   .pozo { transform-box: fill-box; transform-origin: center; transform: scale(0); }
   .fosil :global(.esq-guia) { fill: none; stroke: none; }
-  .fosil :global(.esq-linea) { fill: none; stroke: var(--oxido); stroke-width: 2.2; }
+  .fosil :global(.esq-linea) { fill: none; stroke: var(--oxido); stroke-width: 1.2; stroke-linejoin: round; stroke-linecap: round; }
   .fosil :global(.esq-fina) { fill: none; stroke: var(--oxido); stroke-width: 1.5; }
   .fosil :global(.esq-lejana) { fill: none; stroke: var(--oxido); stroke-width: 1.5; opacity: 0.45; }
   .fosil :global(.esq-punto) { fill: var(--oxido); }
