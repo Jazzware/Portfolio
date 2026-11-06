@@ -6,9 +6,12 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const r = content[lang].rewards;
 const TOTAL = 4;
+// Por debajo de 1000 px la vasija no se dibuja, así que sus dos recompensas no se pueden encontrar: quedan la jarra y la excavación.
+const TOTAL_ANGOSTA = 2;
 const contadores = Array.from({ length: TOTAL }, (_, i) => r.count(i + 1, TOTAL));
+const contadoresAngosta = Array.from({ length: TOTAL_ANGOSTA }, (_, i) => r.count(i + 1, TOTAL_ANGOSTA));
 ---
-<div class="aviso mundo-creador" role="status" aria-live="polite" data-contadores={JSON.stringify(contadores)} hidden>
+<div class="aviso mundo-creador" role="status" aria-live="polite" data-contadores={JSON.stringify(contadores)} data-contadores-angosta={JSON.stringify(contadoresAngosta)} hidden>
   <span class="aviso-n"></span>
   <span class="aviso-t"></span>
 </div>
@@ -19,13 +22,17 @@ const contadores = Array.from({ length: TOTAL }, (_, i) => r.count(i + 1, TOTAL)
   const aviso = document.querySelector<HTMLElement>('.aviso');
   if (aviso) {
     const contadores: string[] = JSON.parse(aviso.dataset.contadores ?? '[]');
+    const contadoresAngosta: string[] = JSON.parse(aviso.dataset.contadoresAngosta ?? '[]');
+    // Mismo punto de corte que la vasija (Vasija.astro): desde 1000 px se dibuja y cuentan las cuatro recompensas.
+    const escritorio = matchMedia('(min-width: 1000px)');
     const vistos = new Set<string>();
     let espera: number | undefined;
     document.addEventListener('descubrimiento', (e) => {
       const { id, texto } = (e as CustomEvent<{ id: string; texto: string }>).detail;
       if (vistos.has(id)) return;
       vistos.add(id);
-      aviso.querySelector('.aviso-n')!.textContent = contadores[vistos.size - 1] ?? '';
+      const lista = escritorio.matches ? contadores : contadoresAngosta;
+      aviso.querySelector('.aviso-n')!.textContent = lista[vistos.size - 1] ?? '';
       aviso.querySelector('.aviso-t')!.textContent = texto;
       aviso.hidden = false;
       sube(aviso);
