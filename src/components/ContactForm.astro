@@ -38,14 +38,14 @@ const f = content[lang].contact.form;
 
   {site.turnstileSiteKey && (
     <>
-      <div class="cf-turnstile" data-sitekey={site.turnstileSiteKey} data-language={lang}></div>
+      <div class="cf-turnstile" data-sitekey={site.turnstileSiteKey} data-language={lang} data-action="contact"></div>
       <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     </>
   )}
 
   <div class="send">
-    <button class="btn" type="submit">{f.send}</button>
-    <p class="status" role="status" aria-live="polite"></p>
+    <button class="btn" type="submit" disabled={!site.turnstileSiteKey}>{f.send}</button>
+    <p class="status" role="status" aria-live="polite">{!site.turnstileSiteKey && f.errors.unavailable}</p>
   </div>
 </form>
 
@@ -87,6 +87,7 @@ const f = content[lang].contact.form;
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      if (button.disabled) return;
       const bad = localErrors();
       markInvalid(bad);
       if (bad.length) { show('', ''); return; }
@@ -104,13 +105,13 @@ const f = content[lang].contact.form;
           markInvalid(data.fields);
         } else if (data?.error === 'captcha') {
           show(m.errors.captcha, 'bad');
-          (window as unknown as { turnstile?: { reset(): void } }).turnstile?.reset();
         } else {
           show(m.errors.unavailable, 'bad');
         }
       } catch {
         show(m.errors.network, 'bad');
       } finally {
+        (window as unknown as { turnstile?: { reset(): void } }).turnstile?.reset();
         button.disabled = false;
         button.textContent = m.send;
       }

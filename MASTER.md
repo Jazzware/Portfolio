@@ -156,12 +156,13 @@ Botón principal por sección: uno. Mismo verbo para la misma intención en toda
 
 ## 9. Recompensas ocultas (4)
 
-Ninguna es necesaria; ninguna se anuncia antes de encontrarse. Contador «Descubrimiento n de 4».
+Ninguna es necesaria; ninguna se anuncia antes de encontrarse. Contador «Descubrimiento n de 4». Por debajo de
+1000 px, sin la vasija, las recompensas que se pueden encontrar son la jarra y la excavación: el contador dice «n de 2».
 1. **Cocer la jarra.** Tres clics (o Enter) sobre la Fig. 1: el corte pasa de rayado a óxido sólido (400 ms).
 2. **El siguiente rollo.** Activar el rollo punteado de la vasija: se rellena de cobalto y el panel invita a
    escribir («Ese rollo lo pones tú»), con enlace a Contacto.
 3. **Excavar.** Cinco clics (o Enter) sobre la franja de tierra del pie: la tierra se despeja y aparece el
-   esqueleto de terópodo en postura de muerte, trazándose (el dibujo que te gustó en la ronda 1).
+   esqueleto de un anquilosaurio colapsado, trazándose.
 4. **La base.** Presionar la losa de la base de la vasija (no tiene rótulo; con teclado, el botón que sigue a los
    rótulos): se rellena de cobalto y el panel muestra la carrera (Licenciatura en Ingeniería en Sistemas
    Computacionales, Universidad del Valle de México, 2015–2020).

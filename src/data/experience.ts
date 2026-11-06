@@ -1,4 +1,4 @@
-// Capas de experiencia, de la más reciente a la más antigua (datos del CV).
+// Capas de experiencia, de la más reciente a la más antigua.
 // El grosor de cada capa en la página es proporcional a su duración.
 // pending: true marca datos de ejemplo (se ven punteados).
 import type { Lang } from './content';
@@ -28,14 +28,14 @@ export const experience: Layer[] = [
     to: '2026-09',
     highlights: {
       es: [
-        'Lideré de principio a fin la sincronización de índices en ~120 bases de datos que dan servicio a ~3,200 clientes del CRM.',
+        'Lideré de principio a fin la sincronización de índices entre las bases de datos del CRM.',
         'Primer ingeniero de software contratado en México para el equipo de CRM; fundé el equipo local y definí sus acuerdos de trabajo y ceremonias ágiles, como desarrollador y Scrum Master.',
         'Fui punto de escalación en caídas de producción, de un error genérico a la causa raíz, y mentor de compañeros en C#, SQL y depuración.',
         'Construí una integración con Covideo para incluir videos personalizados en los correos de agencias automotrices, y mantuve reportes SSRS y stored procedures.',
         'Orquesté un flujo de ticket a PR con mínima intervención humana: GitHub Copilot (Agent mode) y GitHub Actions para validar antes del merge.',
       ],
       en: [
-        'Led end-to-end the index synchronization across ~120 databases serving ~3,200 CRM customers.',
+        'Led end-to-end the index synchronization across the CRM databases.',
         'First software engineer hired in Mexico for the CRM team; founded the local team and defined its working agreements and agile ceremonies, as both developer and Scrum Master.',
         'Was the escalation point for production outages, from a generic error to root cause, and mentored teammates on C#, SQL and debugging.',
         'Built an integration with Covideo that embeds personalized videos in promotional emails for automotive dealerships, and maintained SSRS reports and stored procedures.',
@@ -51,15 +51,15 @@ export const experience: Layer[] = [
     to: '2022-02',
     highlights: {
       es: [
-        'Identifiqué la necesidad y lideré de principio a fin el proceso de credenciales de empleados conforme a la nueva normativa laboral: de $29 a $13 MXN por credencial (~55 % de ahorro).',
+        'Identifiqué la necesidad y lideré de principio a fin el proceso de credenciales de empleados conforme a la nueva normativa laboral: reduciendo el costo por credencial.',
         'Diseñé y desarrollé con mi equipo un ERP desde cero en ASP.NET 5 y EF Core sobre PostgreSQL que reemplazó el sistema legado.',
-        'Automaticé la prenómina con Excel VBA y expresiones regulares (99 % de datos limpios) y reemplacé un proceso manual de reportes con una automatización en C#.',
+        'Automaticé la prenómina con Excel VBA y expresiones regulares y reemplacé un proceso manual de reportes con una automatización en C#.',
         'Di soporte y mantenimiento a módulos del sistema hechos en Java.',
       ],
       en: [
-        'Identified the need and led end-to-end the employee ID badge process, compliant with new Mexican labor regulations: from $29 to $13 MXN per badge (~55% savings).',
+        'Identified the need and led end-to-end the employee ID badge process, compliant with new Mexican labor regulations: reducing the cost per badge.',
         'Designed and built, with my team, an ERP from scratch in ASP.NET 5 and EF Core on PostgreSQL that replaced the legacy system.',
-        'Automated pre-payroll with Excel VBA and regular expressions (99% clean data) and replaced a manual reporting process with a C# automation.',
+        'Automated pre-payroll with Excel VBA and regular expressions and replaced a manual reporting process with a C# automation.',
         'Supported and maintained system modules written in Java.',
       ],
     },
