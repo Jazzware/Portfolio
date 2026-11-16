@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "npm run build && npx --yes wrangler@3 pages deploy dist --project-name portafolio",
+    "deploy": "npm run build && npx --yes wrangler@3 pages deploy dist --project-name portafolio-ilv",
     "test": "node --test tests/contacto.test.ts"
   },
   "dependencies": {

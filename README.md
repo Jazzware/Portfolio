@@ -63,7 +63,7 @@ solo hacen un fundido corto. Sin JavaScript, o si el script no llega en 2.5 s, l
    redirige). Ya está en `site.url` de `src/config.ts`. El juego vive en `paleosharp.jazzware.dev`, en su propio
    proyecto de Pages.
 
-Sin Git, `npm run deploy` construye y sube `dist/` con Wrangler. El proyecto de Pages debe llamarse `portafolio`; la
+Sin Git, `npm run deploy` construye y sube `dist/` con Wrangler. El proyecto de Pages debe llamarse `portafolio-ilv`; la
 primera vez, Wrangler pide iniciar sesión en Cloudflare.
 
 ## Formulario «Contáctame»
