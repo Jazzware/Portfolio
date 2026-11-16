@@ -1,0 +1,6 @@
+# Solo valores de ejemplo. Copia a .dev.vars para desarrollo con Wrangler.
+# Usa Resend de pruebas y un widget Turnstile de desarrollo que autorice localhost.
+RESEND_API_KEY=
+CONTACT_TO=
+CONTACT_FROM=
+TURNSTILE_SECRET_KEY=
