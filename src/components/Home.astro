@@ -13,7 +13,6 @@ import Avisos from './Avisos.astro';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = content[lang];
-const cv = site.cv[lang];
 const idiomas = [
   { code: 'es', label: 'ES', name: 'Español', href: '/' },
   { code: 'en', label: 'EN', name: 'English', href: '/en/' },
@@ -28,7 +27,6 @@ const enlaces = [
   site.email && { label: t.contact.email, href: `mailto:${site.email}`, text: site.email },
   site.linkedin && { label: t.contact.linkedin, href: site.linkedin, text: site.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') },
   site.github && { label: t.contact.github, href: site.github, text: site.github.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') },
-  cv && { label: t.contact.cv, href: cv, text: t.hero.cv },
 ].filter(Boolean) as { label: string; href: string; text: string }[];
 const pilaLabel = t.experience.vessel.stack;
 ---
@@ -76,7 +74,6 @@ const pilaLabel = t.experience.vessel.stack;
         <div class="acciones" data-revela>
           <a class="btn" href="#contacto">{t.hero.contact}</a>
           <a class="btn mundo-creador" href={site.paleosharp.play}>{t.hero.play}</a>
-          {cv && <a class="btn" href={cv} download>{t.hero.cv}</a>}
         </div>
       </div>
       <Jarra lang={lang} />
