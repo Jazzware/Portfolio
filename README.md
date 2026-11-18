@@ -26,8 +26,7 @@ en local: `npm run build && npx wrangler pages dev dist`.
 | `functions/api/contacto.ts` | Recibe el formulario «Contáctame» y te lo manda por correo (Resend). |
 | `src/data/experience.ts` | Los trabajos, del más reciente al más antiguo. Las fechas (`from` y `to`, en `AAAA-MM`; `to: null` si sigue vigente) dan la altura de cada rollo de la vasija. |
 | `src/data/content.ts` | Todos los textos, en español e inglés, incluida la carrera que muestra la base de la vasija (`experience.vessel.base`). |
-| `MASTER.md` | El sistema de diseño: paleta, tipografía, espaciado, movimiento, componentes, estructura de la página, recompensas ocultas y accesibilidad. |
-| `src/styles/tokens.css` | Los valores de `MASTER.md` como variables CSS: colores, tamaños de texto, espacios y duraciones. |
+| `src/styles/tokens.css` | Los valores del sistema de diseño como variables CSS: colores, tamaños de texto, espacios y duraciones. |
 | `src/assets/` | Capturas del juego. La Fig. 2 usa `paleosharp-yacimiento.png`. |
 | `public/` | Archivos que se sirven tal cual: el ícono, `_headers`. |
 
@@ -36,7 +35,7 @@ en local: `npm run build && npx wrangler pages dev dist`.
 El sitio se dibuja con la convención de la ilustración arqueológica: las vasijas de las figuras 1 y 3 van mitad en
 corte (rayado) y mitad por fuera. El cobalto marca lo del ingeniero y el rojo óxido lo del creador. La tipografía es
 IBM Plex Sans y Mono, servida desde el propio sitio (`@fontsource`); el sitio no hace peticiones a terceros, salvo
-Turnstile si lo activas. La guía completa está en `MASTER.md`.
+Turnstile si lo activas.
 
 - **Fig. 1, portada** (`Jarra.astro`): una jarra torneada en corte y exterior.
 - **Fig. 2, PaleoSharp** (`FiguraPaleo.astro`): una captura real de un nivel, montada como espécimen y rotulada
@@ -47,7 +46,7 @@ Turnstile si lo activas. La guía completa está en `MASTER.md`.
   JavaScript, la vasija se reemplaza por un catálogo de filas que se abren.
 
 Atajos de teclado: `1` a `4` llevan a cada sección y `?` muestra la lista. Hay cuatro recompensas ocultas con un
-contador; están descritas en `MASTER.md` §9. Por debajo de 1000 px, sin la vasija, el contador cuenta dos.
+contador. Por debajo de 1000 px, sin la vasija, el contador cuenta dos.
 
 Movimiento (`src/scripts/movimiento.ts`): las figuras se trazan una vez al entrar en pantalla y los bloques suben
 8 px mientras aparecen. Si el sistema pide reducir el movimiento, las figuras aparecen ya dibujadas y los bloques
@@ -78,7 +77,7 @@ Lo envía [Resend](https://resend.com); consulta en tu cuenta la cuota vigente.
    - `CONTACT_TO`: tu correo.
    - `TURNSTILE_SECRET_KEY` (tipo *Secret*): la clave secreta de Turnstile.
    - `PUBLIC_TURNSTILE_SITE_KEY`: la clave pública del widget, disponible durante el build.
-3. Sigue [SECURITY.md](SECURITY.md) para crear el widget y la regla de límite de solicitudes.
+3. En Cloudflare, crea el widget de Turnstile y la regla de límite de solicitudes.
 4. Vuelve a desplegar después de configurar las variables. Mientras falte la clave pública, el botón está
    deshabilitado; si falta una variable obligatoria del servidor, la función no envía correos.
 
@@ -88,7 +87,7 @@ Para que los correos salgan de tu dominio (mejor entrega, menos spam): en Resend
 
 **Contra spam:** Turnstile es obligatorio y se valida en el servidor, incluido el dominio y la acción `contact`.
 También hay un campo trampa. El límite de solicitudes se configura en Cloudflare; no está activo por cambiar
-el código. Las instrucciones y pendientes de publicación están en [SECURITY.md](SECURITY.md).
+el código.
 
 Para desarrollo, copia `.env.example` a `.env` y `.dev.vars.example` a `.dev.vars`. Completa únicamente las
 copias locales con Resend de pruebas y un widget Turnstile de desarrollo que autorice `localhost`. Los archivos
