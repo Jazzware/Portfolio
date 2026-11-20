@@ -6,7 +6,7 @@ export const site = {
   name: 'Iván López Villegas',
   /**
    * Correo visible en la página. En null, la gente te escribe solo con el formulario «Contáctame»
-   * (los mensajes llegan al correo de CONTACT_TO, configurado en Cloudflare; ver README).
+   * (los mensajes llegan al correo de CONTACT_TO, configurado en Cloudflare).
    */
   email: null as string | null,
   /** Clave pública de Turnstile, configurada al construir; sin ella el formulario queda deshabilitado. */
