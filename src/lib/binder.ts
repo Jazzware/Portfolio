@@ -97,7 +97,8 @@ export function agrupar(filas: Record<string, string>[]): Carta[] {
     const set = parseInt(f['Set Number'], 10);
     const numero = f['Card Number'];
     const cuenta = parseInt(f['Count'], 10) || 0;
-    if (!set || !numero) continue;
+    // Una fila en 0 es una versión que ya no se tiene: no cuenta ni crea la carta.
+    if (!set || !numero || cuenta <= 0) continue;
     const id = `${set}|${numero}`;
     let c = porCarta.get(id);
     if (!c) {

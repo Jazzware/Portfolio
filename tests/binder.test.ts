@@ -31,6 +31,19 @@ test('junta normal y foil en una carta y ordena por set y número', () => {
   assert.deepEqual(cartas.map((c) => `${c.set}/${c.numero}`), ['3/4e', '7/90', '7/116', '7/222', '10/27/P3', '10/218']);
 });
 
+test('ignora filas en 0 y sets con ceros a la izquierda', () => {
+  const cartas = agrupar(leerCsv([
+    'Set Number,Card Number,Variant,Count,Name,Color,Rarity',
+    '003,211,foil,0,"Morph - Space Goo",Emerald,Enchanted',
+    '007,92,normal,2,"Shere Khan - Infamous Tiger",Emerald,Rare',
+    '007,92,foil,0,"Shere Khan - Infamous Tiger",Emerald,Rare',
+  ].join('\n')));
+  assert.equal(cartas.length, 1);
+  assert.equal(cartas[0].set, 7);
+  assert.equal(cartas[0].clave, '7-92');
+  assert.deepEqual([cartas[0].normal, cartas[0].foil], [2, 0]);
+});
+
 test('clasifica en las cuatro secciones', () => {
   const s = Object.fromEntries(agrupar(leerCsv(csv)).map((c) => [c.numero, c.seccion]));
   assert.equal(s['90'], 'set');
