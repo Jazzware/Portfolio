@@ -15,6 +15,15 @@
   --ok: #8BD3A5;
   --mundo: var(--cobalto);   /* cada sección lo redefine */
 
+  /* Tintas de Lorcana (solo /binder/). Son dato, no acento: siempre junto a su nombre.
+     Contraste sobre --horno: ámbar 10.84, amatista 6.22, esmeralda 7.95, rubí 5.75, zafiro 7.47, acero 9.09. */
+  --tinta-amber: #F2B632;
+  --tinta-amethyst: #B07AD6;
+  --tinta-emerald: #45B884;
+  --tinta-ruby: #EE5468;
+  --tinta-sapphire: #5AA4EA;
+  --tinta-steel: #A6B1BD;
+
   /* Tipografía */
   --sans: "IBM Plex Sans", "Segoe UI", Roboto, system-ui, sans-serif;
   --mono: "IBM Plex Mono", Consolas, ui-monospace, monospace;

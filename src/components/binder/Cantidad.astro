@@ -1,0 +1,26 @@
+---
+// Cuántas copias hay de una versión y su precio unitario. Normal: ficha lisa; foil: rayado de corte (MASTER.md §1).
+// El script del binder reescribe [data-unitario] al cambiar fuente o moneda. En las tablas, los encabezados de
+// columna ya dicen «Normal» y «Foil»; en las placas, `rotulo` agrega la palabra para lectores de pantalla.
+interface Props { n: number; p: number | null; foil: boolean; rotulo?: boolean }
+const { n, p, foil, rotulo = false } = Astro.props;
+const version = foil ? 'foil' : 'normal';
+const precio = (v: number) => '$' + v.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+---
+{n > 0
+  ? <span class="cant">
+      <span class:list={['ficha-q', { foil }]}>{n}{rotulo && <span class="sr-only"> {version}</span>}</span>
+      <span class="unitario mono" data-unitario={foil ? 'f' : 'n'}>{p == null ? '—' : precio(p)}</span>
+    </span>
+  : <span class="ficha-q cero">0</span>}
+
+<style is:global>
+.pag-binder {
+  .cant { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+  .ficha-q { display: inline-block; min-width: 36px; padding: 2px 8px; font-family: var(--mono); font-size: var(--t-chico); text-align: center; border: 1px solid var(--filete-fuerte); font-variant-numeric: tabular-nums; }
+  .ficha-q.foil { border-color: var(--hueso-2); background: repeating-linear-gradient(135deg, transparent 0 3px, color-mix(in srgb, var(--hueso) 22%, transparent) 3px 4px); }
+  .ficha-q.cero { border-style: dashed; border-color: var(--filete); color: var(--filete-fuerte); }
+  .unitario { font-size: 13px; color: var(--hueso-2); white-space: nowrap; }
+  .unitario .cond { color: var(--mundo); margin-left: 4px; }
+}
+</style>

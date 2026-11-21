@@ -3,24 +3,33 @@ import '../styles/global.css';
 import { content, type Lang } from '../data/content';
 import { site } from '../config';
 
-interface Props { lang: Lang }
-const { lang } = Astro.props;
+interface Props {
+  lang: Lang;
+  /** Para páginas aparte de la portada (p. ej. /binder/): título, descripción y ruta propios, sin versión EN. */
+  pagina?: { titulo: string; descripcion: string; ruta: string; indexar?: boolean };
+}
+const { lang, pagina } = Astro.props;
 const t = content[lang];
-const canonical = new URL(lang === 'es' ? '/' : '/en/', site.url);
+const titulo = pagina?.titulo ?? t.meta.title;
+const descripcion = pagina?.descripcion ?? t.meta.description;
+const canonical = new URL(pagina?.ruta ?? (lang === 'es' ? '/' : '/en/'), site.url);
 ---
 <!doctype html>
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{t.meta.title}</title>
-    <meta name="description" content={t.meta.description} />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    {pagina?.indexar === false && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="es" href={new URL('/', site.url)} />
-    <link rel="alternate" hreflang="en" href={new URL('/en/', site.url)} />
-    <link rel="alternate" hreflang="x-default" href={new URL('/', site.url)} />
-    <meta property="og:title" content={t.meta.title} />
-    <meta property="og:description" content={t.meta.description} />
+    {!pagina && <>
+      <link rel="alternate" hreflang="es" href={new URL('/', site.url)} />
+      <link rel="alternate" hreflang="en" href={new URL('/en/', site.url)} />
+      <link rel="alternate" hreflang="x-default" href={new URL('/', site.url)} />
+    </>}
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta name="theme-color" content="#0A0A0C" />
