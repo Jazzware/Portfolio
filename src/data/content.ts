@@ -108,6 +108,7 @@ export const content = {
       },
     },
     footer: 'Hecho con Astro y publicado en Cloudflare Pages.',
+    binder: 'Mi binder de Lorcana',
     rewards: {
       count: (n: number, total: number) => `Descubrimiento ${n} de ${total}`,
       jar: 'La jarra está cocida.',
@@ -229,6 +230,7 @@ export const content = {
       },
     },
     footer: 'Built with Astro and hosted on Cloudflare Pages.',
+    binder: 'My Lorcana binder (in Spanish)',
     rewards: {
       count: (n: number, total: number) => `Discovery ${n} of ${total}`,
       jar: 'The jar is fired.',

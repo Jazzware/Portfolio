@@ -1,0 +1,364 @@
+---
+// Página del binder. Mundo del creador (óxido). Sin JavaScript se ve todo, en USD con precios de TCGplayer;
+// src/scripts/binder.ts agrega filtros, fuente de precio, moneda y orden.
+import { site } from '../../config';
+import Cantidad from './Cantidad.astro';
+import { SETS, CARTAS_POR_SET, valor, sinPrecio, orden, type CartaConPrecio, type Precios, type StarCity, type Seccion } from '../../lib/binder';
+
+interface Props { cartas: CartaConPrecio[]; precios: Precios; starcity: StarCity }
+const { cartas, precios, starcity } = Astro.props;
+
+const INK_ES: Record<string, string> = { Amber: 'Ámbar', Amethyst: 'Amatista', Emerald: 'Esmeralda', Ruby: 'Rubí', Sapphire: 'Zafiro', Steel: 'Acero' };
+const RAREZA_ES: Record<string, string> = { Common: 'Común', Uncommon: 'Infrecuente', Rare: 'Rara', 'Super Rare': 'Súper rara', Legendary: 'Legendaria', Promo: 'Promo', Epic: 'Epic', Enchanted: 'Enchanted' };
+const SECCIONES: [Seccion, string][] = [['set', 'Cartas de set'], ['promos', 'Promos'], ['epics', 'Epics'], ['enchanted', 'Enchanteds']];
+const MONEDAS = ['USD', ...Object.keys(precios.tasas)];
+
+const usd = (v: number, corto = true) => (corto ? '$' : '') + v.toLocaleString('es-MX', { minimumFractionDigits: corto && v >= 1000 ? 0 : 2, maximumFractionDigits: corto && v >= 1000 ? 0 : 2 }) + (corto ? '' : ' USD');
+const suma = (l: CartaConPrecio[]) => l.reduce((a, c) => a + valor(c, 'tcg'), 0);
+const copias = (l: CartaConPrecio[]) => l.reduce((a, c) => a + c.normal + c.foil, 0);
+const fmt = (n: number) => n.toLocaleString('es-MX');
+const dos = (s: number) => String(s).padStart(2, '0');
+const partir = (n: string) => { const i = n.indexOf(' - '); return i < 0 ? [n, ''] : [n.slice(0, i), n.slice(i + 3)]; };
+const tintas = (ink: string) => ink.split(' ');
+/** Una tinta: clase; dos tintas: mitad y mitad. */
+const punto = (ink: string) => { const p = tintas(ink).map((t) => t.toLowerCase()); return p.length > 1 ? { class: 'punto', style: `background:linear-gradient(90deg,var(--tinta-${p[0]}) 50%,var(--tinta-${p[1]}) 50%)` } : { class: `punto t-${p[0]}` }; };
+const nombreTinta = (ink: string) => tintas(ink).map((i) => INK_ES[i] ?? i).join(' / ');
+
+/** Atributos de precio que lee el script; se omiten los que la fuente no tiene. */
+const datos = (c: CartaConPrecio, i: number) => {
+  const d: Record<string, string | number> = { 'data-i': i, 'data-s': c.set, 'data-ink': c.tinta, 'data-n': c.normal, 'data-f': c.foil };
+  if (c.tcg[0] != null) d['data-tn'] = c.tcg[0];
+  if (c.tcg[1] != null) d['data-tf'] = c.tcg[1];
+  if (c.scg[0]) { d['data-sn'] = c.scg[0][0]; if (c.scg[0][1] !== 'NM') d['data-scn'] = c.scg[0][1]; }
+  if (c.scg[1]) { d['data-sf'] = c.scg[1][0]; if (c.scg[1][1] !== 'NM') d['data-scf'] = c.scg[1][1]; }
+  return d;
+};
+const indice = new Map(cartas.map((c, i) => [c, i]));
+
+const porSeccion = Object.fromEntries(SECCIONES.map(([k]) => [k, cartas.filter((c) => c.seccion === k)])) as Record<Seccion, CartaConPrecio[]>;
+const sets = [...new Set(porSeccion.set.map((c) => c.set))].sort((a, b) => a - b);
+const valorSet = Object.fromEntries(sets.map((s) => [s, suma(porSeccion.set.filter((c) => c.set === s))]));
+const maxSet = Math.max(...Object.values(valorSet), 1);
+const grupos = (l: CartaConPrecio[], clave: (c: CartaConPrecio) => string) => {
+  const g = new Map<string, CartaConPrecio[]>();
+  for (const c of l) g.set(clave(c), [...(g.get(clave(c)) ?? []), c]);
+  return [...g].sort(([a], [b]) => a.localeCompare(b, 'en', { numeric: true }));
+};
+const gruposEspeciales: Record<'promos' | 'epics' | 'enchanted', [string, string, CartaConPrecio[]][]> = {
+  promos: grupos(porSeccion.promos, (c) => c.numero.split('/')[1] ?? 'Otras').map(([k, l]) => [k, `Promos ${k}`, l]),
+  epics: grupos(porSeccion.epics, (c) => dos(c.set)).map(([k, l]) => [k, `S${k} · ${SETS[+k]}`, l]),
+  enchanted: grupos(porSeccion.enchanted, (c) => dos(c.set)).map(([k, l]) => [k, `S${k} · ${SETS[+k]}`, l]),
+};
+const faltan = cartas.filter((c) => sinPrecio(c, 'tcg')).length;
+---
+<div class="pag-binder">
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="encabezado-b">
+  <div class="wrap fila-enc">
+    <nav class="ruta" aria-label="Ruta">
+      <a href="/">{site.name}</a><span aria-hidden="true">/</span><span aria-current="page">binder</span>
+    </nav>
+  </div>
+</header>
+
+<main id="contenido" class="wrap mundo-creador binder" data-tasas={JSON.stringify(precios.tasas)} data-fecha-tcg={precios.fecha} data-fecha-scg={starcity.fecha}>
+  <section class="ficha" aria-labelledby="titulo" data-revela>
+    <div>
+      <h1 id="titulo">Binder Lorcana</h1>
+      <p class="intro">Mi colección de Disney Lorcana, carta por carta, con la versión normal y la foil juntas.</p>
+    </div>
+    <dl class="cifras">
+      <div class="cifra mayor"><dt data-etq-total>Valor en TCGplayer</dt><dd data-total>{usd(suma(cartas), false)}</dd></div>
+      <div class="cifra"><dt>Cartas distintas</dt><dd>{fmt(cartas.length)}</dd></div>
+      <div class="cifra"><dt>Copias</dt><dd>{fmt(copias(cartas))}</dd></div>
+      <div class="cifra"><dt>Playsets</dt><dd>{fmt(porSeccion.set.filter((c) => c.normal + c.foil >= 4).length)}</dd></div>
+    </dl>
+  </section>
+
+  <div class="barra-b" id="barra">
+    <div class="fila controles-precio">
+      <div class="grupo"><span class="lbl" id="etq-fuente">Precio de</span>
+        <div class="seg" role="group" aria-labelledby="etq-fuente">
+          <button type="button" data-fuente="tcg" aria-pressed="true">TCGplayer</button>
+          <button type="button" data-fuente="scg" aria-pressed="false">Star City</button>
+        </div>
+      </div>
+      <div class="grupo"><label class="lbl" for="moneda">Moneda</label>
+        <select class="campo" id="moneda">{MONEDAS.map((m) => <option>{m}</option>)}</select>
+      </div>
+      <div class="grupo" id="grupo-tasa" hidden><label class="lbl" for="tasa">1 USD =</label>
+        <input class="campo tasa" id="tasa" type="number" step="0.01" min="0" inputmode="decimal" />
+        <button type="button" class="enlace boton-enlace" id="tasa-hoy">Usar la del {precios.tasasFecha}</button>
+      </div>
+      <button type="button" class="btn mas-filtros" id="mas-filtros" aria-expanded="false" aria-controls="filtros">Filtros</button>
+    </div>
+    <div class="fila filtros" id="filtros">
+      <input class="campo buscar" type="search" id="buscar" placeholder="Personaje o versión" aria-label="Buscar carta" />
+      <select class="campo" id="filtro-set" aria-label="Set">
+        <option value="">Todos los sets</option>
+        {Object.entries(SETS).map(([k, v]) => <option value={k}>S{dos(+k)} · {v}</option>)}
+      </select>
+      <div class="tintas" role="group" aria-label="Tinta">
+        {Object.entries(INK_ES).map(([k, v]) => <button type="button" class="tinta" data-tinta={k} aria-pressed="false"><span class={`punto t-${k.toLowerCase()}`} aria-hidden="true"></span>{v}</button>)}
+      </div>
+      <label class="check"><input type="checkbox" id="sin-playset" /> Sin playset</label>
+      <label class="check"><input type="checkbox" id="con-foil" /> Con foil</label>
+      <label class="grupo"><span class="lbl">Orden</span>
+        <select class="campo" id="orden"><option value="num">Número</option><option value="val">Valor</option></select>
+      </label>
+    </div>
+    <p class="nota" data-nota aria-live="polite">
+      <strong>Precio de mercado de TCGplayer</strong> al {precios.fecha}.{faltan > 0 && ` ${faltan} cartas sin precio en esta fuente.`}
+    </p>
+  </div>
+
+  <nav class="secciones" aria-label="Secciones">
+    {SECCIONES.map(([k, l]) => (
+      <a href={`#${k}`} data-sec={k}><b>{l}</b><span class="mono" data-total-sec={k}>{fmt(porSeccion[k].length)} · {usd(suma(porSeccion[k]))}</span></a>
+    ))}
+  </nav>
+
+  <section id="set" class="seccion-b" data-seccion="set" aria-labelledby="h-set">
+    <h2 id="h-set" class="titulo-sec">Cartas de set</h2>
+    <div class="inventario">
+      {sets.map((s) => {
+        const l = porSeccion.set.filter((c) => c.set === s);
+        const tengo = new Set(l.map((c) => orden(c.numero))).size;
+        return (
+          <details class="set" data-grupo data-set={s}>
+            <summary>
+              <span class="num mono">S{dos(s)}</span>
+              <span class="nombre">{SETS[s]}<small>{fmt(copias(l))} copias · {l.filter((c) => c.normal + c.foil >= 4).length} playsets<span data-coinciden></span></small></span>
+              <span class="escalas" aria-hidden="true">
+                <span class="escala"><span>Completo</span><span class="pista"><i style={`transform:scaleX(${tengo / CARTAS_POR_SET})`}></i></span><span class="med">{tengo}/{CARTAS_POR_SET}</span></span>
+                <span class="escala valor"><span>Valor</span><span class="pista"><i data-barra style={`transform:scaleX(${valorSet[s] / maxSet})`}></i></span><span class="med" data-pct>{Math.round((valorSet[s] / maxSet) * 100)}%</span></span>
+              </span>
+              <span class="sr-only">{tengo} de {CARTAS_POR_SET} cartas.</span>
+              <span class="total mono" data-total-grupo>{usd(valorSet[s])}</span>
+              <span class="chev" aria-hidden="true"></span>
+            </summary>
+            <table>
+              <thead><tr><th scope="col">#</th><th scope="col">Carta</th><th scope="col">Tinta</th><th scope="col">Rareza</th><th scope="col" class="q">Normal</th><th scope="col" class="q">Foil</th><th scope="col" class="v">Valor</th></tr></thead>
+              <tbody data-lista>
+                {l.map((c) => {
+                  const [nombre, version] = partir(c.nombre);
+                  return (
+                    <tr class="c" {...datos(c, indice.get(c)!)}>
+                      <td class="n mono">{c.numero}</td>
+                      <td class="carta"><b>{nombre}</b>{version && <span class="ver"> {version}</span>}{c.normal + c.foil >= 4 && <span class="playset">playset</span>}</td>
+                      <td class="tin"><span class="tintacel"><span {...punto(c.tinta)} aria-hidden="true"></span>{nombreTinta(c.tinta)}</span></td>
+                      <td class="rar">{RAREZA_ES[c.rareza] ?? c.rareza}</td>
+                      <td class="q"><Cantidad n={c.normal} p={c.tcg[0]} foil={false} /></td>
+                      <td class="q"><Cantidad n={c.foil} p={c.tcg[1]} foil={true} /></td>
+                      <td class="v mono" data-valor>{sinPrecio(c, 'tcg') && !valor(c, 'tcg') ? '—' : usd(valor(c, 'tcg'))}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </details>
+        );
+      })}
+    </div>
+    <p class="vacio" hidden>Ninguna carta coincide. Quita un filtro para ver más.</p>
+  </section>
+
+  {(['promos', 'epics', 'enchanted'] as const).map((k) => (
+    <section id={k} class="seccion-b" data-seccion={k} aria-labelledby={`h-${k}`}>
+      <h2 id={`h-${k}`} class="titulo-sec">{SECCIONES.find(([s]) => s === k)![1]}</h2>
+      {gruposEspeciales[k].map(([, titulo, l]) => (
+        <div class="grupo-placas" data-grupo>
+          <div class="grupo-h"><h3>{titulo}</h3><span class="mono"><span>{l.length} cartas</span> · <span data-total-grupo>{usd(suma(l))}</span></span></div>
+          <div class="placas" data-lista>
+            {l.map((c) => {
+              const [nombre, version] = partir(c.nombre);
+              return (
+                <article class:list={['c', 'placa', 'placa-carta', { enchanted: c.seccion === 'enchanted' }]} {...datos(c, indice.get(c)!)}>
+                  <div class="cab mono"><span>{c.seccion === 'promos' ? c.numero : `S${dos(c.set)} · ${c.numero}`}</span>
+                    <span class="tintacel"><span {...punto(c.tinta)} aria-hidden="true"></span>{nombreTinta(c.tinta)}</span></div>
+                  <h4>{nombre}</h4>
+                  {version && <p class="ver">{version}</p>}
+                  <div class="pie-placa">
+                    <span class="cants">{c.normal > 0 && <Cantidad n={c.normal} p={c.tcg[0]} foil={false} rotulo />}{c.foil > 0 && <Cantidad n={c.foil} p={c.tcg[1]} foil={true} rotulo />}</span>
+                    <span class="val mono" data-valor>{sinPrecio(c, 'tcg') && !valor(c, 'tcg') ? 'Sin precio' : usd(valor(c, 'tcg'))}</span>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+      <p class="vacio" hidden>Ninguna carta coincide. Quita un filtro para ver más.</p>
+    </section>
+  ))}
+</main>
+
+<footer class="pie-b">
+  <div class="wrap chico">
+    <p>Precios en USD: TCGplayer (mercado, vía Lorcast) al {precios.fecha}; Star City Games (venta, captura manual) al {starcity.fecha}. Tipo de cambio por defecto del {precios.tasasFecha}. Las cartas sin precio cuentan como 0.</p>
+    <p><a class="enlace" href="/">Volver a jazzware.dev</a></p>
+  </div>
+</footer>
+
+</div>
+
+<script>import '../../scripts/binder';</script>
+
+<style is:global>
+/* Estilos del binder, acotados a .pag-binder (globales para no marcar cada fila con atributos de ámbito). */
+.pag-binder {
+  .encabezado-b { position: sticky; top: 0; z-index: var(--z-encabezado); background: var(--horno); border-bottom: 1px solid var(--filete); }
+  .fila-enc { display: flex; align-items: center; min-height: 64px; }
+  .ruta { display: flex; align-items: center; gap: var(--e-1); font-weight: 600; }
+  .ruta a { color: var(--hueso); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+  .ruta span { color: var(--hueso-2); }
+  .ruta [aria-current] { color: var(--hueso); }
+
+  .binder { display: flex; flex-direction: column; gap: var(--e-6); padding-block: var(--e-8) var(--e-12); }
+  .lbl { font-size: var(--t-chico); font-weight: 600; color: var(--hueso-2); }
+
+  /* Ficha de la colección */
+  .ficha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--e-4); align-items: end; }
+  .ficha h1 { font-size: var(--t-display); line-height: 1; letter-spacing: -0.025em; }
+  .intro { max-width: 60ch; color: var(--hueso-2); margin-top: var(--e-2); }
+  .cifras { display: grid; grid-template-columns: repeat(4, auto); gap: var(--e-1) var(--e-4); margin: 0; }
+  .cifra { display: flex; flex-direction: column-reverse; gap: 2px; }
+  .cifra dt { font-size: var(--t-chico); color: var(--hueso-2); }
+  .cifra dd { margin: 0; font-family: var(--mono); font-size: var(--t-h3); line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .cifra.mayor dd { color: var(--mundo); }
+  @media (max-width: 900px) { .ficha { grid-template-columns: 1fr; } .cifras { grid-template-columns: repeat(2, auto); justify-content: start; } }
+
+  /* Barra de controles: fija bajo el encabezado en pantallas anchas. */
+  .barra-b { border-block: 1px solid var(--filete); padding-block: var(--e-2); display: flex; flex-direction: column; gap: var(--e-2); }
+  .fila { display: flex; flex-wrap: wrap; gap: var(--e-2) var(--e-3); align-items: center; }
+  .grupo { display: flex; align-items: center; gap: var(--e-1); }
+  .grupo[hidden] { display: none; }
+  .seg { display: inline-flex; border: 1px solid var(--filete-fuerte); }
+  .seg button { min-height: 44px; padding: 0 var(--e-2); border: 0; background: transparent; cursor: pointer; transition: color var(--d-rapida) var(--curva-exacta); }
+  .seg button + button { border-left: 1px solid var(--filete-fuerte); }
+  .seg button[aria-pressed='true'] { background: var(--mundo); color: var(--sobre-acento); font-weight: 600; }
+  .campo { min-height: 44px; background: var(--horno); color: var(--hueso); border: 1px solid var(--filete-fuerte); border-radius: 0; padding: 0 12px; font: inherit; font-size: 15px; }
+  .campo:hover { border-color: var(--hueso-2); }
+  .campo:focus-visible { outline: 2px solid var(--cobalto); outline-offset: 0; border-color: var(--hueso); }
+  .tasa { width: 120px; font-family: var(--mono); }
+  .buscar { flex: 1 1 240px; min-width: 0; }
+  .boton-enlace { background-color: transparent; border: 0; cursor: pointer; min-height: 44px; font-size: var(--t-chico); }
+  .tintas { display: flex; flex-wrap: wrap; gap: var(--e-1); }
+  .tinta { min-height: 44px; display: inline-flex; align-items: center; gap: var(--e-1); padding: 0 12px; border: 1px solid var(--filete); background: transparent; cursor: pointer; font-size: 15px; transition: border-color var(--d-rapida) var(--curva-exacta); }
+  .tinta[aria-pressed='true'] { border-color: var(--hueso); }
+  .tinta.apagada { color: var(--hueso-2); }
+  @media (hover: hover) and (pointer: fine) { .tinta:hover { border-color: var(--hueso-2); } }
+  .check { min-height: 44px; display: inline-flex; align-items: center; gap: var(--e-1); cursor: pointer; font-size: 15px; }
+  .check input { width: 20px; height: 20px; accent-color: var(--oxido); }
+  .nota { font-size: var(--t-chico); color: var(--hueso-2); }
+  .nota strong { color: var(--hueso); font-weight: 600; }
+  /* Sin JavaScript los controles no hacen nada: solo se muestra la nota. */
+  html:not(.js) & .controles-precio, html:not(.js) & .filtros { display: none; }
+  .mas-filtros { display: none; }
+  @media (max-width: 760px) {
+    .mas-filtros { display: inline-flex; }
+    .barra-b:not(.abierta) .filtros { display: none; }
+  }
+
+  /* Secciones */
+  .secciones { display: flex; gap: var(--e-4); border-bottom: 1px solid var(--filete); overflow-x: auto; }
+  .secciones a { display: flex; flex-direction: column; gap: 2px; padding-block: var(--e-2); color: var(--hueso-2); text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .secciones b { font-size: var(--t-h3); font-weight: 600; transition: color var(--d-rapida) var(--curva-exacta); }
+  .secciones a[aria-current='true'] { border-bottom-color: var(--mundo); }
+  .secciones a[aria-current='true'] b { color: var(--hueso); }
+  @media (hover: hover) and (pointer: fine) { .secciones a:hover b { color: var(--hueso); } }
+  @media (max-width: 640px) {
+    .secciones { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--e-3); overflow: visible; border-bottom: 0; }
+    .secciones a { border-bottom: 1px solid var(--filete); margin-bottom: 0; white-space: normal; }
+    .secciones a[aria-current='true'] { border-bottom: 2px solid var(--mundo); }
+    .secciones b { font-size: 20px; }
+  }
+  .seccion-b { display: flex; flex-direction: column; }
+  .seccion-b[hidden] { display: none; }
+  /* Con JavaScript las pestañas ya nombran la sección. */
+  html.js & .titulo-sec { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  html:not(.js) & .titulo-sec { padding-block: var(--e-4) var(--e-2); }
+
+  /* Inventario por set */
+  .set { border-top: 1px solid var(--filete); }
+  .set:last-child { border-bottom: 1px solid var(--filete); }
+  .set[hidden] { display: none; }
+  .set > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1.1fr) 120px 24px; gap: var(--e-1) var(--e-3); align-items: center; padding-block: var(--e-3); }
+  .set > summary::-webkit-details-marker { display: none; }
+  .num { color: var(--mundo); }
+  .nombre { font-size: 20px; font-weight: 600; line-height: 1.2; transition: color var(--d-rapida) var(--curva-exacta); }
+  .nombre small { display: block; font-size: var(--t-chico); font-weight: 400; color: var(--hueso-2); margin-top: 2px; }
+  @media (hover: hover) and (pointer: fine) { .set > summary:hover .nombre { color: var(--mundo); } }
+  .escalas { display: flex; flex-direction: column; gap: 6px; }
+  .escala { display: grid; grid-template-columns: 72px minmax(0, 1fr) 72px; align-items: center; gap: var(--e-1); font-size: 13px; color: var(--hueso-2); }
+  .pista { height: 6px; background: var(--filete); overflow: hidden; }
+  .pista i { display: block; height: 100%; background: var(--hueso-2); transform-origin: left; }
+  .escala.valor .pista i { background: var(--mundo); }
+  .med { font-family: var(--mono); text-align: right; color: var(--hueso); font-variant-numeric: tabular-nums; }
+  .total { font-size: var(--t-cuerpo); text-align: right; font-variant-numeric: tabular-nums; }
+  .chev { width: 12px; height: 12px; border-right: 1.5px solid var(--hueso-2); border-bottom: 1.5px solid var(--hueso-2); transform: rotate(45deg); justify-self: center; transition: transform var(--d-base) var(--curva-exacta); }
+  .set[open] .chev { transform: rotate(-135deg); }
+  @media (max-width: 900px) {
+    .set > summary { grid-template-columns: 48px minmax(0, 1fr) auto 24px; }
+    .escalas { grid-column: 2 / -1; grid-row: 2; }
+  }
+
+  /* Catálogo */
+  table { width: 100%; border-collapse: collapse; font-size: 15px; margin-bottom: var(--e-4); }
+  thead th { font-size: var(--t-chico); font-weight: 600; color: var(--hueso-2); text-align: left; padding: var(--e-1) 12px; border-bottom: 1px solid var(--filete-fuerte); }
+  tbody td { padding: 12px; border-bottom: 1px solid var(--filete); vertical-align: middle; }
+  .c[hidden] { display: none; }
+  td.n { color: var(--hueso-2); width: 64px; }
+  .carta b { font-weight: 600; }
+  .ver { color: var(--hueso-2); }
+  .q { text-align: center; width: 112px; }
+  .v { text-align: right; width: 112px; font-variant-numeric: tabular-nums; }
+  th.q { text-align: center; } th.v { text-align: right; }
+  .tintacel { display: inline-flex; align-items: center; gap: var(--e-1); font-size: var(--t-chico); color: var(--hueso-2); white-space: nowrap; }
+  .punto { width: 10px; height: 10px; flex: none; display: inline-block; }
+  .t-amber { background: var(--tinta-amber); } .t-amethyst { background: var(--tinta-amethyst); } .t-emerald { background: var(--tinta-emerald); }
+  .t-ruby { background: var(--tinta-ruby); } .t-sapphire { background: var(--tinta-sapphire); } .t-steel { background: var(--tinta-steel); }
+  .rar { font-size: var(--t-chico); color: var(--hueso-2); white-space: nowrap; }
+  .playset { font-size: 13px; color: var(--mundo); margin-left: var(--e-1); white-space: nowrap; }
+  @media (max-width: 760px) {
+    thead { display: none; }
+    table, tbody, tr, td { display: block; }
+    /* Fila apilada: número | nombre; tinta · rareza; normal, foil y valor. */
+    tbody tr.c { display: grid; grid-template-columns: 40px 64px 64px minmax(0, 1fr); gap: var(--e-1) var(--e-2); padding-block: var(--e-2); border-bottom: 1px solid var(--filete); }
+    tbody tr.c[hidden] { display: none; }
+    tbody td { border: 0; padding: 0; width: auto; min-width: 0; }
+    td.n { grid-row: 1 / span 3; }
+    td.carta { grid-column: 2 / -1; }
+    td.tin { grid-column: 2 / 4; grid-row: 2; }
+    td.tin .tintacel { white-space: normal; }
+    td.rar { grid-column: 4; grid-row: 2; text-align: right; white-space: normal; }
+    td.q { grid-row: 3; text-align: left; }
+    td.q:nth-of-type(5) { grid-column: 2; }
+    td.q:nth-of-type(6) { grid-column: 3; }
+    td.v { grid-column: 4; grid-row: 3; align-self: end; }
+  }
+
+  /* Placas de especímenes */
+  .grupo-placas[hidden] { display: none; }
+  .grupo-h { display: flex; align-items: baseline; gap: var(--e-2); flex-wrap: wrap; padding-block: var(--e-4) var(--e-2); }
+  .grupo-h .mono { color: var(--hueso-2); }
+  .placas { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--e-2); }
+  .placa-carta { padding: var(--e-3); display: flex; flex-direction: column; gap: var(--e-1); }
+  @media (hover: hover) and (pointer: fine) { .placa-carta:hover { border-color: var(--mundo); } }
+  .cab { display: flex; justify-content: space-between; gap: var(--e-1); color: var(--hueso-2); }
+  .placa-carta h4 { margin: var(--e-1) 0 0; font-size: 20px; font-weight: 600; line-height: 1.2; }
+  .placa-carta .ver { font-size: 15px; }
+  .pie-placa { margin-top: auto; padding-top: var(--e-2); border-top: 1px solid var(--filete); display: flex; justify-content: space-between; align-items: end; gap: var(--e-1); }
+  .cants { display: flex; gap: var(--e-2); }
+  .val { font-size: var(--t-cuerpo); }
+  /* Enchanted: rayado tenue en óxido, como un corte. */
+  .placa-carta.enchanted { border-color: var(--filete-fuerte); background-image: repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in srgb, var(--oxido) 8%, transparent) 6px 7px); }
+  .placa-carta.enchanted .cab span:first-child { color: var(--mundo); }
+
+  .vacio { padding: var(--e-6) 0; color: var(--hueso-2); border-block: 1px solid var(--filete); }
+  .pie-b { border-top: 1px solid var(--filete); padding-block: var(--e-4) var(--e-6); }
+  .pie-b .wrap { display: flex; flex-direction: column; gap: var(--e-1); }
+  .pie-b p { max-width: 68ch; }
+}
+</style>

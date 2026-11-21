@@ -1,0 +1,19 @@
+---
+// Binder de Lorcana: pública pero fuera de buscadores (noindex aquí y X-Robots-Tag en public/_headers).
+import Base from '../layouts/Base.astro';
+import Binder from '../components/binder/Binder.astro';
+import csv from '../data/binder/coleccion.csv?raw';
+import precios from '../data/binder/precios.json';
+import starcity from '../data/binder/starcity.json';
+import { leerCsv, agrupar, conPrecios, type Precios, type StarCity } from '../lib/binder';
+
+const cartas = conPrecios(agrupar(leerCsv(csv)), precios as Precios, starcity as StarCity);
+---
+<Base lang="es" pagina={{
+  titulo: 'Binder Lorcana · Iván López Villegas',
+  descripcion: 'Mi colección de Disney Lorcana, con precios de TCGplayer y Star City Games.',
+  ruta: '/binder/',
+  indexar: false,
+}}>
+  <Binder cartas={cartas} precios={precios as Precios} starcity={starcity as StarCity} />
+</Base>
